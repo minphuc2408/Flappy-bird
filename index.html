@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird with Hand Gesture</title>
+    <!-- add favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/img/mercury.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/mercury.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="./assets/img/mercury.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/img/mercury.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/img/mercury.png">
+    <meta name="msapplication-TileImage" content="../assets/img/mercury.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <!-- css -->
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <!-- js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@latest"></script>
+    <style></style>
+</head>
+<body>
+    <div class="app">
+        <div id="header" class="header visible">
+            <div class="container">
+                <div class="earth"></div>
+                <div class="header-body">
+                    <h1>Flappy bird with Hand Gesture</h1>
+                    <button class="btn btn-start-game">
+                        <span>Click to play</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="tutorial hidden">
+            <div class="container">
+                <div class="earth"></div>
+                <div class="tutorial-body">
+                    <h2 class="tutorial__heading">Hướng dẫn</h2>
+                    <ul class="tutorial-list">
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Bay Lên: Nhấn phím Space hoặc thực hiện cử chỉ nắm tay để làm cho vật thể bay lên.</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Rơi Xuống: Vật thể sẽ tự động rơi xuống nếu không có hành động nào được thực hiện. Hãy cẩn thận với trọng lực!</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Khi đi qua các chướng ngại vật sẽ được cộng điểm </span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Hãy lưu ý khi va chạm nếu máu trở về 0 thì trò chơi sẽ kết thúc</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Để đảm bảo ổn định chỉ sử dụng một tay để điều khiển</span>
+                        </li>
+                    </ul>
+                    <div class="button-player">
+                        <button class="btn btn-play">
+                            <span>1P</span>
+                        </button>
+                        <button class="btn btn-play">
+                            <span>2P</span>
+                        </button>
+                        <button class="btn btn-play">
+                            <span>3P</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="game-fla-bird hidden">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+    </div>
+
+    <video id="video" width="640" height="360" autoplay hidden></video>
+    <canvas id="handCanvas" width="640" height="480" hidden></canvas>
+
+    <script type="module" src="./js/game.js" autoplay defer></script>
+</body>
+</html>
