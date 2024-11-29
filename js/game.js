@@ -13,135 +13,139 @@ const gameCtx = gameCanvas.getContext("2d");
 resizeCanvas();
 // window.addEventListener('resize', resizeCanvas);
 
-function main() {  
-    class Game {
-        constructor() {
-            this.gameConstructor = new GameConstructor(this);
-            this.keyHandler = new GameKeyHandler(this); 
-            this.image = [this.spaceShip1Image, this.spaceShip2Image,this.spaceShip3Image];
-            this.players = [];
-            this.playerInGame = [...this.players];
-            this.boss = new BOSS(this, gameCtx); 
-            this.smallBoss = [];
-            this.obstacleHandler = new ObstacleHandler(this, gameCtx);
-            this.gameReset = new GameReset(this);
-            this.gameUpdate = new GameUpdate(this);
-            this.gameDrawer = new GameDrawer(this, gameCtx);
-            this.gameScreen = gameScreen(this);
-            this.time = createTime(); 
-
-        }
-
-        updatePlayers(players) {
-            this.players = []; //1 line bug 2 hours
-            for (let i = 0; i < players; i++) {
-                let player;
-                player = new Player(this, this.image[i], gameCtx, i + 1);
-                this.players.push(player);
-            }
-            this.playerInGame = [...this.players];
-        }
+window.addEventListener("load", () => {
+    function main() {  
+        class Game {
+            constructor() {
+                this.gameConstructor = new GameConstructor(this);
+                this.keyHandler = new GameKeyHandler(this); 
+                this.image = [this.spaceShip1Image, this.spaceShip2Image,this.spaceShip3Image];
+                this.players = [];
+                this.playerInGame = [...this.players];
+                this.boss = new BOSS(this, gameCtx); 
+                this.smallBoss = [];
+                this.obstacleHandler = new ObstacleHandler(this, gameCtx);
+                this.gameReset = new GameReset(this);
+                this.gameUpdate = new GameUpdate(this);
+                this.gameDrawer = new GameDrawer(this, gameCtx);
+                this.gameScreen = gameScreen(this);
+                this.time = createTime(); 
     
-        startGame() {
-            this.isGameStarted = true;
-            this.isGameover = false;
-            this.startTime = performance.now(); // Đặt thời gian bắt đầu game chính xác tại thời điểm nhấn Space
-            this.time.start(); // Bắt đầu bộ đếm thời gian
-            this.updateGame();
-        }
-
-        render() {
-            this.resetGame();
-            if (!this.isGameStarted) {
-                this.gameScreen.drawStartScreen();
             }
-        }
+    
+            updatePlayers(players) {
+                this.players = []; //1 line bug 2 hours
+                for (let i = 0; i < players; i++) {
+                    let player;
+                    player = new Player(this, this.image[i], gameCtx, i + 1);
+                    this.players.push(player);
+                }
+                this.playerInGame = [...this.players];
+            }
         
-        updateGame() { 
-            this.gameUpdate.update();
-            if (this.smallBoss.length < 4) {
-                for (let i = 0; i < 4; i++) {
-                    const smallBoss = new BOSSSMALL(this, gameCtx, 0); 
-                    let y = (gameCanvas.height - smallBoss.height) / 5 * (i + 1); 
-                    smallBoss.y = y; 
-                    this.smallBoss.push(smallBoss);
+            startGame() {
+                this.isGameStarted = true;
+                this.isGameover = false;
+                this.startTime = performance.now(); // Đặt thời gian bắt đầu game chính xác tại thời điểm nhấn Space
+                this.time.start(); // Bắt đầu bộ đếm thời gian
+                this.updateGame();
+            }
+    
+            render() {
+                this.resetGame();
+                if (!this.isGameStarted) {
+                    this.gameScreen.drawStartScreen();
                 }
             }
-        }
-        
-        drawGame() {
-            this.gameDrawer.draw();
-        }
-        
-        resetGame() {
-            this.gameReset.reset();
-        }
-
-        getCurrentGameTime() {
-            if (!this.isGameStarted) {
-                return 0; // Nếu game chưa bắt đầu, trả về 0
+            
+            updateGame() { 
+                this.gameUpdate.update();
+                if (this.smallBoss.length < 4) {
+                    for (let i = 0; i < 4; i++) {
+                        const smallBoss = new BOSSSMALL(this, gameCtx, 0); 
+                        let y = (gameCanvas.height - smallBoss.height) / 5 * (i + 1); 
+                        smallBoss.y = y; 
+                        this.smallBoss.push(smallBoss);
+                    }
+                }
             }
-            return (performance.now() - this.startTime) / 1000; // Thời gian hiện tại của trò chơi tính bằng giây
-        }
-    }
-
-    // alert("Hãy thiết lập camera để chơi game");
-    document.querySelector(".btn-start-game").addEventListener("click", () => {
-        document.querySelector(".header").classList.replace("visible", "hidden");
-        document.querySelector(".tutorial").classList.replace("hidden", "visible");
-    });
-
-    const buttonPlayer = document.querySelectorAll('.btn-play');
-    const game = new Game();
-
-    const images = [
-        game.spaceShip2Image,
-        game.spaceShip1Image,
-        game.spaceShip3Image,
-        game.spaceBackground,
-        game.fireballImage,
-        game.iceballImage,
-        game.asteroidImage,
-        game.blackHoleImage,
-        game.cosmicDustImage,
-        game.neptuneImage,
-        game.uranusImage,
-        game.saturnImage,
-        game.marsImage,
-        game.mercuryImage,
-        game.jupiterImage,
-        game.venusImage,
-        game.ufoBossImage,
-        game.ufochild1Image,
-        game.ufochild2Image,
-        game.ufochild3Image,
-        game.ufoComeImage,
-        game.missileImage,
-        game.healthImage,
-        game.shieldImage
-    ];
+            
+            drawGame() {
+                this.gameDrawer.draw();
+            }
+            
+            resetGame() {
+                this.gameReset.reset();
+            }
     
-    let imagesLoaded = 0;
-    let selectPlayers = 0;
-    for (let i = 0; i < images.length; i++) {
-        images[i].onload = () => {
-            imagesLoaded++;
-            if (imagesLoaded === images.length) {
-                buttonPlayer.forEach((btn, index) => {
-                    btn.addEventListener('click', () => {
-                        document.querySelector(".tutorial").classList.replace("visible", "hidden");
-                        document.querySelector(".game-fla-bird").classList.remove("hidden", "visible");
-
-                        selectPlayers = index + 1
-                        game.updatePlayers(selectPlayers);
-                    });
-                });
-                game.render();
+            getCurrentGameTime() {
+                if (!this.isGameStarted) {
+                    return 0; // Nếu game chưa bắt đầu, trả về 0
+                }
+                return (performance.now() - this.startTime) / 1000; // Thời gian hiện tại của trò chơi tính bằng giây
             }
-        };
+        }
+    
+        // alert("Hãy thiết lập camera để chơi game");
+        document.querySelector(".btn-start-game").addEventListener("click", () => {
+            document.querySelector(".header").classList.replace("visible", "hidden");
+            document.querySelector(".tutorial").classList.replace("hidden", "visible");
+        });
+    
+        const buttonPlayer = document.querySelectorAll('.btn-play');
+        const game = new Game();
+    
+        const images = [
+            game.spaceShip2Image,
+            game.spaceShip1Image,
+            game.spaceShip3Image,
+            game.spaceBackground,
+            game.fireballImage,
+            game.iceballImage,
+            game.asteroidImage,
+            game.blackHoleImage,
+            game.cosmicDustImage,
+            game.neptuneImage,
+            game.uranusImage,
+            game.saturnImage,
+            game.marsImage,
+            game.mercuryImage,
+            game.jupiterImage,
+            game.venusImage,
+            game.ufoBossImage,
+            game.ufochild1Image,
+            game.ufochild2Image,
+            game.ufochild3Image,
+            game.ufoComeImage,
+            game.missileImage,
+            game.healthImage,
+            game.shieldImage
+        ];
+        
+        let imagesLoaded = 0;
+        let selectPlayers = 0;
+        for (let i = 0; i < images.length; i++) {
+            images[i].onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === images.length) {
+                    buttonPlayer.forEach((btn, index) => {
+                        btn.addEventListener('click', () => {
+                            document.querySelector(".tutorial").classList.replace("visible", "hidden");
+                            document.querySelector(".game-fla-bird").classList.remove("hidden", "visible");
+    
+                            selectPlayers = index + 1
+                            game.updatePlayers(selectPlayers);
+                        });
+                    });
+                    game.render();
+                }
+            };
+        }
     }
-}
-main();
+    main();
+
+});
+
 
 function resizeCanvas() {
     gameCanvas.width = window.innerWidth;
