@@ -2,7 +2,7 @@ import Player from "./Player.js";
 import GameConstructor from "./GameConstructor.js";
 import KeyHandler from "./KeyHandler.js";
 import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
-import Handgestrue from "./handgestrue.js";
+import Handgestrue from "./Handgestrue.js";
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
