@@ -1,4 +1,4 @@
-import smokeEffect from "./gameEffects.js";
+import {smokeEffect, hasShield} from "./gameEffects.js";
 
 class Player {
     constructor(game, image, gameCtx, id) {
@@ -10,32 +10,29 @@ class Player {
 
         this.isAlive = true;
         this.isFalling = false;
-        this.maxHealth = 10000;
+        this.maxHealth = 2000;
         this.currentHealth = this.maxHealth;
         this.displayHealth = this.currentHealth;
-        this.scorePlayer = 0;
+        this.score = 0;
+        this.shieldActive = false;
 
-        this.x =  gameCanvas.width / 3;
-        this.y =  gameCanvas.height / 2;
         this.g =  1050;
         this.l =  -400;
         this.v =  0;
-        this.w =  60;
-        this.h =  60;
-        this.oX =  this.w / 2;
-        this.oY =  this.h / 2;
+        this.width =  60;
+        this.height =  60;
+        this.x =  gameCanvas.width / 3;
+        this.y =  gameCanvas.height / 2 - this.height / 2;
     }
 
     flap() {
         this.v = this.l;
     }
 
-    updatePlayer() {
-        const deltaTime = this.game.time.getDeltaTime();
+    updatePlayer(deltaTime) {
         this.v += this.g * deltaTime;
         this.y += this.v * deltaTime;
-
-        this.scorePlayer = this.game.scoreOverall;
+        this.score = this.game.scoreOverall;
         this.smoke.updateSmokeParticles(deltaTime);
         if (this.currentHealth <= 0) {
             this.isFalling = true;
@@ -46,44 +43,43 @@ class Player {
         }
 
         if (this.displayHealth > this.currentHealth) {
-            this.displayHealth -= 5;
+            this.displayHealth -= 10;
             if(this.displayHealth < this.currentHealth) {
                 this.displayHealth = this.currentHealth;
             }
         }
 
         if(this.currentHealth < this.maxHealth * 0.3) {
-            this.smoke.addSmokeParticles(this.x - 50, this.y);
+            this.smoke.addSmokeParticles(this.x, this.y + this.height / 2);
+        }
+
+        if(this.shieldActive) {
+            hasShield(this, this.gameCtx);
         }
         
-        if (this.y - this.oY <= 0) {
-            this.y = this.oY;
+        if (this.y <= 0) {
+            this.y = 0;
             this.v = 0;
         }
 
-        if (this.y -this.oY >= gameCanvas.height) {
+        if (this.y -this.height >= gameCanvas.height) {
             this.isAlive = false;
         }
 
         if(!this.isAlive) {
-            this.updateScore();   
+            this.game.scorePlayers.push({
+                score: this.score,
+                id: this.id
+            });
+
+            this.game.scorePlayers.sort((a, b) => a.id - b.id);
         }
     }
 
-    updateScore() {
-        const scorePlayers = this.game.scorePlayers;
-            this.scorePlayer = this.game.scoreOverall;
-            scorePlayers.push({score: this.scorePlayer, id: this.id});
-            if(scorePlayers.length > 1) {
-                scorePlayers.sort((a, b) => a.id - b.id);
-            } 
-    }
-    
     drawPlayer(healthX, healthY, scoreX, scoreY) {
         if (this.isAlive) {
             this.gameCtx.save();
-            this.gameCtx.translate(this.x, this.y);
-            this.gameCtx.drawImage(this.image, -this.oX, -this.oY, this.w, this.h);
+            this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
             this.gameCtx.restore();
             this.drawScorePlayer(scoreX, scoreY);
             this.drawHealthPlayer(healthX, healthY);
@@ -100,9 +96,11 @@ class Player {
     }
 
     drawScorePlayer(scoreX, scoreY) {
+        this.gameCtx.save();
         this.gameCtx.fillStyle = "#fff";
         this.gameCtx.font = "20px Ubuntu";
-        this.gameCtx.fillText("Score: " + this.scorePlayer, scoreX, scoreY);
+        this.gameCtx.fillText("Score: " + this.score, scoreX, scoreY);
+        this.gameCtx.restore();
     }
 
     resetPlayer() {
@@ -110,7 +108,7 @@ class Player {
         this.displayHealth = this.maxHealth;
         this.isAlive = true;
         this.isFalling = false;
-        this.scorePlayer = 0;
+        this.score = 0;
 
         this.x = gameCanvas.width / 3;
         this.y = gameCanvas.height / 2;

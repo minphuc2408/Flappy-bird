@@ -21,8 +21,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
     <!-- js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <style></style>
 </head>
 <body>
@@ -44,9 +46,27 @@
                 <div class="earth"></div>
                 <div class="tutorial-body">
                     <h2 class="tutorial__heading">Hướng dẫn</h2>
-                    <ul class="tutorial-list">
+                    <ul class="tutorial-list first">
                         <li class="tutorial__item">
-                            <span class="tutorial__text">Bay Lên: Nhấn phím Space hoặc thực hiện cử chỉ nắm tay để làm cho vật thể bay lên.</span>
+                            <span class="tutorial__text">Phím Space để bay với một người chơi</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Phím A và Space dành cho 2 người chơi</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Phím A, Space, L cho 3 người chơi</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Game đang trong quá trình thử nghiệm!</span>
+                        </li>
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Đảm bảo rằng bật tối ưu hiệu năng ở trình duyệt!</span>
+                        </li>
+                    </ul>
+
+                    <ul class="tutorial-list notvisibility second">
+                        <li class="tutorial__item">
+                            <span class="tutorial__text">Thực hiện cử chỉ nắm tay để làm cho vật thể bay lên (Với Handgesture)</span>
                         </li>
                         <li class="tutorial__item">
                             <span class="tutorial__text">Rơi Xuống: Vật thể sẽ tự động rơi xuống nếu không có hành động nào được thực hiện. Hãy cẩn thận với trọng lực!</span>
@@ -61,7 +81,11 @@
                             <span class="tutorial__text">Để đảm bảo ổn định chỉ sử dụng một tay để điều khiển</span>
                         </li>
                     </ul>
+
                     <div class="button-player">
+                        <button class="btn btn-play">
+                            <span>1P Handgesture</span>
+                        </button>
                         <button class="btn btn-play">
                             <span>1P</span>
                         </button>
@@ -72,6 +96,37 @@
                             <span>3P</span>
                         </button>
                     </div>
+                </div>
+                <div class="tutorial-show">
+                    <button class="btn-tutorial btn-pre active">
+                        <svg viewBox="0 0 54 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M52.3014 0V1.6063M52.3014 1.6063V102L2 51.8031L52.3014 1.6063Z" stroke="#fff" stroke-width="2"/>
+                            <path d="M10.3835 51.5611L46.0137 86.6301V16.4921L10.3835 51.5611Z" fill="currentColor"/>
+                            <path d="M46.0137 15.3699V16.4921M46.0137 16.4921V86.6301L10.3835 51.5611L46.0137 16.4921Z" stroke="#fff" stroke-width="2"/>
+                            </svg>   
+                    </button>
+                    <button class="btn-tutorial btn-next">
+                        <svg  viewBox="0 0 54 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.30141 0V1.6063M1.30141 1.6063V102L51.6028 51.8031L1.30141 1.6063Z" stroke="#fff" stroke-width="2"/>
+                            <path d="M43.2192 51.5611L7.5891 86.6301V16.4921L43.2192 51.5611Z" fill="currentColor"/>
+                            <path d="M7.5891 15.3699V16.4921M7.5891 16.4921V86.6301L43.2192 51.5611L7.5891 16.4921Z" stroke="#fff" stroke-width="2"/>
+                        </svg> 
+                    </button>
+
+                    <script>
+                        const btnPre = document.querySelector('.btn-pre');
+                        const btnNext = document.querySelector('.btn-next');
+                        const firstList = document.querySelector('.first');
+                        const secondList = document.querySelector('.second');
+                        btnNext.onclick = () => {
+                            firstList.classList.add("notvisibility");
+                            secondList.classList.replace("notvisibility", "visible");
+                        }
+                        btnPre.onclick = () => {
+                            secondList.classList.add("notvisibility");
+                            firstList.classList.remove("notvisibility");
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -84,6 +139,6 @@
     <video id="video" width="640" height="360" autoplay hidden></video>
     <canvas id="handCanvas" width="640" height="480" hidden></canvas>
 
-    <script type="module" src="./js/game.js" autoplay defer></script>
+    <script type="module" src="./js/Game.js" autoplay defer></script>
 </body>
 </html>

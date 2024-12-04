@@ -44,4 +44,43 @@ function smokeEffect(gameCtx) {
     }
 }
 
-export default smokeEffect;
+function shakeScreen (duration) {
+    const startTime = performance.now();
+    const intensity = 5;
+    console.log(startTime);
+
+    const shake = () => {
+        const elapsedTime = performance.now() - startTime;
+        if(elapsedTime < duration) {
+            const dx = (Math.random() - 0.5) * intensity;
+            const dy = (Math.random() - 0.5) * intensity;
+            gameCanvas.style.transform = `translate(${dx}px, ${dy}px)`;
+            requestAnimationFrame(shake);
+        } else {
+            gameCanvas.style.transform = 'translate(0, 0)';
+        }
+    };
+
+    shake();
+}
+
+function hasShield(player, gameCtx) {
+    gameCtx.save();
+    const gradient = gameCtx.createRadialGradient(
+        player.x + player.width / 2, player.y + player.height / 2, 0,  // Tâm trong (vị trí trung tâm, bán kính 0)
+        player.x +  player.width / 2, player.y + player.height / 2, player.width // Tâm ngoài (vị trí trung tâm, bán kính 50)
+    );
+
+     // Tạo dải màu từ viền vàng đậm vào trung tâm trong suốt
+    gradient.addColorStop(1, 'rgba(255, 255, 224, 1)');   
+    gradient.addColorStop(1, 'rgba(255, 255, 224, 0.8)');   
+    gradient.addColorStop(0.5, 'rgba(255, 255, 0, 0.6)'); 
+    gradient.addColorStop(0, 'rgba(255, 255, 0, 0)');
+
+    gameCtx.fillStyle = gradient;  // Áp dụng gradient làm màu vẽ
+    gameCtx.beginPath();
+    gameCtx.arc(player.x + player.width / 2, player.y + player.height / 2, 50, 0, 2 * Math.PI); // Vẽ hình tròn với bán kính 50
+    gameCtx.fill();  // Tô hình tròn với dải màu đã tạo
+    gameCtx.restore();
+}
+export {smokeEffect, shakeScreen, hasShield};

@@ -1,19 +1,7 @@
 class GameConstructor {
     constructor(game) {
         this.game = game;
-
-        //Key 
-        this.game.spacePressed = false;
         
-        //Game
-        this.game.scoreOverall = 0;
-        this.game.scorePlayers = [];
-        this.game.isGameStarted = false;
-        this.game.isGameOver = false;
-
-        // Obstacle
-        this.game.shieldActive = false;
-
         //Src image
         this.game.spaceShip2Image = new Image();
         this.game.spaceShip2Image.src = "./assets/img/spaceship2.png"

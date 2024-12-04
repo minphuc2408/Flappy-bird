@@ -1,6 +1,6 @@
 class GameKeyHandler {
-    constructor(gameInstance) {
-        this.gameInstance = gameInstance;
+    constructor(game) {
+        this.game = game;
         this.keysPressed = {};
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -14,22 +14,23 @@ class GameKeyHandler {
         if (gameCanvas && !gameCanvas.classList.contains("visible")) {
             this.keysPressed[event.code] = true;
     
-            this.gameInstance.players.forEach(player => {
-                if (this.gameInstance.isGameOver || this.gameInstance.gameScreen.gameOverDisplayed) {
+            this.game.players.forEach(player => {
+                if (this.game.isGameOver || this.game.gameScreen.gameOverDisplayed) {
                     event.preventDefault();
                     return;
                 }
 
-                if ((event.code === "KeyS" && player === this.gameInstance.players[0] && !player.isFalling) ||
-                    (event.code === "Space" && player === this.gameInstance.players[1] && !player.isFalling) ||
-                    (event.code === "KeyB" && player === this.gameInstance.players[2] && !player.isFalling)) {
+                if ((event.code === "Space" && player === this.game.players[0] && player.currentHealth > 0) ||
+                    (event.code === "KeyA" && player === this.game.players[1] && player.currentHealth > 0) ||
+                    (event.code === "KeyL" && player === this.game.players[2] && player.currentHealth > 0)) {
                         player.flap();
                 }
             });
     
-            if (event.code === 'Enter' && !this.gameInstance.isGameStarted) {
-                this.gameInstance.isGameStarted = true;
-                this.gameInstance.startGame();
+            if (event.code === 'Enter' && !this.game.isGameStarted) {
+                this.game.startTime = performance.now();  
+                this.game.isGameStarted = true;
+                this.game.render();
             }
         }
     }
