@@ -42,6 +42,9 @@ body {
     display: block;
 }
 
+.notvisibility {
+    visibility: hidden;
+}
 
 .container {
     width: 1200px;
@@ -96,20 +99,38 @@ h1 {
 
 .btn {
     margin: 0 30px;
-    padding: 5px 10px;
-    width: var(--width-button);
-    height: var(--height-button);
+    padding: 10px 16px;
+    min-width: var(--width-button);
+    min-height: var(--height-button);
     font-size: 2.2rem;
     font-weight: bold;
     color: var(--white);
     background-color: transparent;
     border: none;
     cursor: pointer;
-    overflow: hidden;
     /* background-clip: text;
     -webkit-background-clip: text;
     background-image: linear-gradient(135deg, magenta, cyan); */
     animation: growup 2s infinite ;
+}
+
+.btn-tutorial {
+    margin: 0 20px;
+    padding: 10px;
+    width: 44px;
+    height: 86px;
+    display: block;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #fff;
+    svg {
+        fill: transparent;
+    }
+}
+
+.btn-next {
+    margin-left: auto;
 }
 
 .btn-start-game {
@@ -140,6 +161,7 @@ h1 {
 }
 
 .btn-play {
+
     margin-bottom: 40px;
 }
 
@@ -170,6 +192,15 @@ h1 {
     font-size: 5.2rem;
     text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan;
     animation: pulse 2s infinite;
+}
+
+.tutorial-show {
+    display: flex;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
 }
 
 .tutorial-list {

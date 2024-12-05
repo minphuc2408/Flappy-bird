@@ -15,6 +15,7 @@ class Player {
         this.displayHealth = this.currentHealth;
         this.score = 0;
         this.shieldActive = false;
+        this.pressed = false;
 
         this.g =  1050;
         this.l =  -400;

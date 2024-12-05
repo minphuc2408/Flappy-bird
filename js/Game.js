@@ -1,6 +1,6 @@
 import Player from "./Player.js";   
 import GameConstructor from "./GameConstructor.js";
-import KeyHandler from "./KeyHandler.js";
+// import KeyHandler from "./KeyHandler.js";
 import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
 import Handgestrue from "./Handgestrue.js";
 
@@ -11,7 +11,7 @@ class Game {
     constructor() {
         //Key 
         this.spacePressed = false;
-        this.keyHandler = new KeyHandler(this);
+        // this.keyHandler = new KeyHandler(this);
         this.handgestrue = new Handgestrue(this);
         //Src image
         this.gameConstructor = new GameConstructor(this);
@@ -154,6 +154,8 @@ class Game {
     }
 }
 window.addEventListener('load', function () {
+    const gameflabird = document.querySelector(".game-fla-bird");
+
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
     document.querySelector(".btn-start-game").addEventListener("click", () => {
@@ -170,7 +172,7 @@ window.addEventListener('load', function () {
     buttonPlayer.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             document.querySelector(".tutorial").classList.replace("visible", "hidden");
-            document.querySelector(".game-fla-bird").classList.remove("hidden", "visible");
+            gameflabird.classList.replace("hidden", "visible");
             selectPlayers = index;
             if(index === 0) {
                 game.handgestrue.start();
@@ -180,6 +182,35 @@ window.addEventListener('load', function () {
             }
         });
     });
+
+    const key = ["Space", "KeyA", "keyL"];
+    window.addEventListener("keydown", (e) => {
+        if(gameflabird.classList.contains("visible") && e.code === "Enter") {
+            game.startTime = performance.now();
+            game.isGameStarted = true;
+            game.render(); 
+        }
+
+        game.players.forEach((player, index) => {
+            if(game.isGameStarted) {
+                let keyPlay = key[index];
+                if(player.currentHealth > 0 && !player.pressed && e.code === keyPlay) {
+                    player.flap();
+                    player.pressed = true;
+                }
+            }
+        });
+    });
+
+    window.addEventListener("keyup" , (e) => {
+        game.players.forEach((player, index) => {
+            const playerKey = key[index];
+            if (e.code === playerKey) {
+                player.pressed = false;
+            }
+        });
+    });
+
     let lastTime = 0;
     function animate(timeStamp) {
         const deltaTime = (timeStamp - lastTime) / 1000;    
@@ -259,7 +290,9 @@ function gameScreen(game) {
         noButton.onclick = () => {
             game.handgestrue.stop();
             game.reset();
+            document.querySelector('.game-fla-bird').classList.replace('visible', 'hidden');
             document.querySelector('.tutorial').classList.replace('hidden', 'visible');
+
             document.body.removeChild(gameOverContainer);
             gameOverDisplayed = false;
         };
