@@ -181,7 +181,7 @@ window.addEventListener('load', function () {
         });
     });
 
-    const key = ["Space", "KeyA", "keyL"];
+    const key = ["Space", "KeyA", "KeyL"];
     window.addEventListener("keydown", (e) => {
         if(gameflabird.classList.contains("visible") && e.code === "Enter") {
             game.startTime = performance.now();
