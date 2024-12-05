@@ -1,6 +1,5 @@
 import Player from "./Player.js";   
 import GameConstructor from "./GameConstructor.js";
-// import KeyHandler from "./KeyHandler.js";
 import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
 import Handgestrue from "./Handgestrue.js";
 
@@ -11,7 +10,6 @@ class Game {
     constructor() {
         //Key 
         this.spacePressed = false;
-        // this.keyHandler = new KeyHandler(this);
         this.handgestrue = new Handgestrue(this);
         //Src image
         this.gameConstructor = new GameConstructor(this);
