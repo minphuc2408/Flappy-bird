@@ -96,7 +96,6 @@ class ObstacleHandler {
                 if (obstacle.isColumn && obstacle.x + this.obstacleWidth < player.x && !obstacle.passed) {
                    this.game.scoreOverall++;
                     obstacle.passed = true;
-                    
                 }
     
                 if (obstacle.x + this.obstacleWidth < 0) {
@@ -372,15 +371,14 @@ class ObstacleHandler {
 class Enemy {
     constructor(game, ctx) {
         this.game = game;
-        this.ctx = ctx;
+        this.gameCtx = ctx;
         this.width = 90;
         this.height = 90;
         this.x = gameCanvas.width;
         this.y = gameCanvas.height / 2 - this.height / 2;
         this.speed = 36;
         this.isTimeActive = false;
-        this.largeLaser = new LargeLaser(this, this.ctx);
-        this.lasers = [];
+        this.largeLaser = new LargeLaser(this, this.gameCtx);
     }
 
     isColliding(player, type) {
@@ -393,14 +391,8 @@ class Enemy {
         this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
     }
 
-    updatePositionSmallLaser() {
-        this.lasers.forEach((laser) => {
-            laser.x = this.x;
-            laser.y = this.y + this.height / 2 - laser.height / 2;
-        });
-    }
     isTime(gameTime) {
-        return gameTime % TIMEINTERVAL >= TIME_START && gameTime % TIMEINTERVAL <= TIME_END;
+        return gameTime % TIMEINTERVAL > TIME_START && gameTime % TIMEINTERVAL < TIME_END;
     }
 
     update(gameTime, deltaTime) {
@@ -415,13 +407,6 @@ class Enemy {
             this.x += this.speed * deltaTime;
         }
     }
-
-        
-    drawLasers() {
-        this.lasers.forEach(laser => {
-            laser.draw();
-        });
-    }
 }
 
 class BOSS extends Enemy {
@@ -431,19 +416,45 @@ class BOSS extends Enemy {
         this.speed = 120;
         this.targetY = this.y;
         this.direction = 1;
+        this.timeShoot = 0;
+        this.lasers = [];
+        this.currentTime = 0;
+        this.smallLaserInterval = 0.6;
     }
 
-    timeLargeLaserActive(gameTime) {
-        return gameTime % TIMEINTERVAL >= 45 && gameTime % TIMEINTERVAL < 50;
+    createSmallLaser() {
+        const laser = new SmallLaser(this, this.gameCtx, this.x, this.y + this.height / 2);
+        this.lasers.push(laser);
     }
 
-    timeSmallLaserActive(gameTime) {     
-        return (gameTime % TIMEINTERVAL >= 35 && gameTime % TIMEINTERVAL < 45) || (gameTime % TIMEINTERVAL >= 50 && gameTime % TIMEINTERVAL <= 57);    
+    createLasers(gameTime) {
+        if(gameTime - this.currentTime >= this.smallLaserInterval) {
+            this.createSmallLaser(gameTime);
+            this.currentTime = gameTime;
+        }
+    }
+
+    updateSmallLaser(deltaTime) {
+        this.lasers.forEach((laser, index) => {
+            laser.update(deltaTime);
+            if(laser.x + laser.width < 0) {
+                this.lasers.splice(index, 1);
+            }
+        });
+
     }
 
     updatePositionLargeLaser() {
         super.updatePositionLargeLaser();
         this.largeLaser.height = 20;
+    }
+
+    timeLargeLaserActive(gameTime) {
+        return gameTime % TIMEINTERVAL > 45 && gameTime % TIMEINTERVAL < 50;
+    }
+
+    timeSmallLaserActive(gameTime) {     
+        return (gameTime % TIMEINTERVAL > 35 && gameTime % TIMEINTERVAL < 45) || (gameTime % TIMEINTERVAL > 50 && gameTime % TIMEINTERVAL < 57);    
     }
 
     checkCollisionSmallLaser() {
@@ -474,25 +485,9 @@ class BOSS extends Enemy {
             });
     }
 
-    updateLaser(deltaTime) {
-        this.lasers.forEach((laser, index) => {
-            laser.update(deltaTime);
-            if(laser.x + laser.width < 0) {
-                this.lasers.splice(index, 1);
-            }
-        }); 
-    }
-
-    createLaser() {  
-        if (this.lasers.length < 1) {
-            const laser = new SmallLaser(this.game, this.ctx, this.x, this.y + this.height / 2);
-            this.lasers.push(laser);
-        }
-    }
-
-
     update(gameTime, deltaTime) {
-        super.update(gameTime, deltaTime);  
+        super.update(gameTime, deltaTime);
+
         const positionActive = this.x <= gameCanvas.width * (4 / 6);
         if(this.isTimeActive && !positionActive) {
             this.x -= this.speed * deltaTime;
@@ -505,33 +500,33 @@ class BOSS extends Enemy {
             }
             this.direction = this.targetY < this.y ? -1 : 1;               
             this.y += this.direction * this.speed * deltaTime;
-            this.createLaser();
 
-            if(this.timeSmallLaserActive(gameTime)) {
-                this.updateLaser(deltaTime);
-                this.checkCollisionSmallLaser();
-            }
             if(this.timeLargeLaserActive(gameTime)) {
                 this.updatePositionLargeLaser();
                 this.checkCollisionLargeLaser();
+                this.lasers = [];
+            }
+            if(this.timeSmallLaserActive(gameTime)) {
+                this.createLasers(gameTime);
+                this.checkCollisionSmallLaser();
             }
         }
+        this.updateSmallLaser(deltaTime);
     }
 
     draw(gameTime) {
-        if(this.isTimeActive) {
-            if(this.timeSmallLaserActive(gameTime)) {
-                this.drawLasers(); 
-            }
-
-            if(this.timeLargeLaserActive(gameTime)) {
-                this.largeLaser.draw("gold", "#fff");
-            }
+        if(this.timeLargeLaserActive(gameTime)) {
+            this.largeLaser.draw("gold", "#fff");
         }
 
-        this.ctx.save();
-        this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        this.ctx.restore();
+        if(this.timeSmallLaserActive(gameTime)) {
+            this.lasers.forEach((laser) => {
+                laser.draw();
+            });
+        }
+        this.gameCtx.save();
+        this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        this.gameCtx.restore();
     }
 
     reset() {
@@ -540,7 +535,7 @@ class BOSS extends Enemy {
         this.targetY = this.y;
         this.direction = 1;
         this.lasers = [];
-        this.timeActive = false;
+        this.currentTime = 0;
     }
 }
 
@@ -587,21 +582,20 @@ class BOSSSMALL extends Enemy {
             this.largeLaser.draw("red", "rgba(255, 105, 0, 1)");
         }
 
-        this.ctx.save();
-        this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        this.ctx.restore();
+        this.gameCtx.save();
+        this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        this.gameCtx.restore();
     }
 
     reset() {
         this.x = gameCanvas.width;
-        this.timeActive = false;
     }
 }
 
 class Laser {
     constructor(game, ctx) {
         this.game = game;
-        this.ctx = ctx;
+        this.gameCtx = ctx;
         this.width = 10;
         this.height = 5;
         this.speed = 600;
@@ -624,14 +618,14 @@ class SmallLaser extends Laser {
     }
 
     draw() {
-        this.ctx.save();
-        this.ctx.fillStyle = "#ff1818";
-        this.ctx.fillRect(this.x, this.y, this.width, this.height * 0.2);
-        this.ctx.fillStyle = "white";
-        this.ctx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
-        this.ctx.fillStyle = "#ff1818";
-        this.ctx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
-        this.ctx.restore();
+        this.gameCtx.save();
+        this.gameCtx.fillStyle = "#ff1818";
+        this.gameCtx.fillRect(this.x, this.y, this.width, this.height * 0.2);
+        this.gameCtx.fillStyle = "white";
+        this.gameCtx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
+        this.gameCtx.fillStyle = "#ff1818";
+        this.gameCtx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
+        this.gameCtx.restore();
     }
 }
 
@@ -648,14 +642,14 @@ class LargeLaser extends Laser {
         if(this.y <= 0) {
             return;
         }
-        this.ctx.save();
-        this.ctx.fillStyle = BorderColor;
-        this.ctx.fillRect(this.x, this.y, this.width, this.height * 0.2);
-        this.ctx.fillStyle = MainColor;
-        this.ctx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
-        this.ctx.fillStyle = BorderColor;
-        this.ctx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
-        this.ctx.restore();
+        this.gameCtx.save();
+        this.gameCtx.fillStyle = BorderColor;
+        this.gameCtx.fillRect(this.x, this.y, this.width, this.height * 0.2);
+        this.gameCtx.fillStyle = MainColor;
+        this.gameCtx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
+        this.gameCtx.fillStyle = BorderColor;
+        this.gameCtx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
+        this.gameCtx.restore();
     }
 }
 

@@ -17,11 +17,11 @@ class Player {
         this.shieldActive = false;
         this.pressed = false;
 
-        this.g =  1050;
-        this.l =  -400;
-        this.v =  0;
-        this.width =  60;
-        this.height =  60;
+        this.g = 1050;
+        this.l = -400;
+        this.v = 0;
+        this.width = 60;
+        this.height = 60;
         this.x =  gameCanvas.width / 3;
         this.y =  gameCanvas.height / 2 - this.height / 2;
     }
