@@ -2,7 +2,7 @@ import Player from "./Player.js";
 import GameConstructor from "./GameConstructor.js";
 import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
 import Handgestrue from "./Handgestrue.js";
-
+    
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
@@ -152,41 +152,46 @@ class Game {
     }
 }
 window.addEventListener('load', function () {
-    const gameflabird = document.querySelector(".game-fla-bird");
-
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
+    const gameflabird = document.querySelector(".game-fla-bird");
+    const handCanvas = document.querySelector("#handCanvas");
+
     document.querySelector(".btn-start-game").addEventListener("click", () => {
         document.querySelector(".header").classList.replace("visible", "hidden");
         document.querySelector(".tutorial").classList.replace("hidden", "visible");
     });
 
     const buttonPlayer = document.querySelectorAll('.btn-play');
-    let selectPlayers = 0;
-    
     const game = new Game();
 
-    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     buttonPlayer.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             document.querySelector(".tutorial").classList.replace("visible", "hidden");
             gameflabird.classList.replace("hidden", "visible");
-            selectPlayers = index;
             if(index === 0) {
                 game.handgestrue.start();
-                game.udpatePlayerHandgestrue(selectPlayers);
+                game.udpatePlayerHandgestrue(index);
             } else {
-                game.updatePlayers(selectPlayers);
+                game.updatePlayers(index);
             }
         });
     });
 
     const key = ["Space", "KeyA", "KeyL"];
     window.addEventListener("keydown", (e) => {
-        if(gameflabird.classList.contains("visible") && e.code === "Enter") {
-            game.startTime = performance.now();
-            game.isGameStarted = true;
-            game.render(); 
+        if(gameflabird.classList.contains("visible")) {
+            if(e.code === "KeyO") {
+                handCanvas.classList.remove("hidden");
+            }
+            if(e.code === "KeyQ") {
+                handCanvas.classList.add("hidden");
+            }
+            if(e.code === "Enter") {
+                game.startTime = performance.now();
+                game.isGameStarted = true;
+                game.render(); 
+            }              
         }
 
         game.players.forEach((player, index) => {
@@ -209,8 +214,17 @@ window.addEventListener('load', function () {
         });
     });
 
+    gameflabird.onclick = () => {
+        game.startTime = performance.now();
+        game.isGameStarted = true;
+        game.render(); 
+
+        game.players[0].flap();
+    };
+
     let lastTime = 0;
-    function animate(timeStamp) {
+    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    function animate(timeStamp) {  
         const deltaTime = (timeStamp - lastTime) / 1000;    
         lastTime = timeStamp;
 

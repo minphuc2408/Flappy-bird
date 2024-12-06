@@ -299,7 +299,10 @@ h1 {
     bottom: 0;
     right: 0;
     z-index: 1;
-    display: none;
+}
+
+#video {
+    z-index: 0;
 }
 
 /* CSS cho cảnh báo tên lửa */

@@ -107,7 +107,7 @@ class Handgestrue {
     onResults(results) {
         if (!this.isRunning) return;
 
-        // this.drawHandLandmarks(results);
+        this.drawHandLandmarks(results);
         this.handleHandGestures(results);
     }
 }
