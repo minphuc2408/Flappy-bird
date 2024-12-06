@@ -215,10 +215,14 @@ window.addEventListener('load', function () {
     });
 
     //Demo mobile
+    let hasTouch = false;
     gameflabird.onclick = () => {
-        game.startTime = performance.now();
-        game.isGameStarted = true;
-        game.render(); 
+        if(!hasTouch) {
+            hasTouch = true;
+            game.startTime = performance.now();
+            game.isGameStarted = true;
+            game.render(); 
+        }
     };
 
     gameflabird.addEventListener('touchstart', function(event) {
