@@ -214,13 +214,16 @@ window.addEventListener('load', function () {
         });
     });
 
+    //Demo mobile
     gameflabird.onclick = () => {
         game.startTime = performance.now();
         game.isGameStarted = true;
         game.render(); 
-
-        game.players[0].flap();
     };
+
+    gameflabird.addEventListener('touchstart', function(event) {
+        game.players[0].flap();
+    });
 
     let lastTime = 0;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
