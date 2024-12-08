@@ -94,7 +94,7 @@ class Handgestrue {
     handleHandGestures(results) {
         if (results.multiHandLandmarks) {
             for (const landmarks of results.multiHandLandmarks) {
-                if (this.isHandClosed(landmarks) && !this.hold && this.game.players[0].currentHealth > 0) {
+                if (this.isHandClosed(landmarks) && !this.hold && !this.game.players[0].isFalling) {
                     this.game.players[0].flap();
                     this.hold = true;
                 } else if (!this.isHandClosed(landmarks)) {
