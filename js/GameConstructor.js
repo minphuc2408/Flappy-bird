@@ -74,6 +74,9 @@ class GameConstructor {
 
         this.game.shieldImage = new Image();
         this.game.shieldImage.src = './assets/img/shield.png';
+
+        this.game.powerImage = new Image();
+        this.game.powerImage.src = "./assets/img/power.png"
     }
 }
 

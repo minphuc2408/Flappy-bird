@@ -30,7 +30,6 @@ class Handgestrue {
 
     async start() {
         if (this.isRunning) {
-            console.warn("Hand tracking is already running");
             return;
         }
         this.camera = new Camera(video, {
