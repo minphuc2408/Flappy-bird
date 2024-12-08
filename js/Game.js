@@ -2,14 +2,14 @@ import Player from "./Player.js";
 import GameConstructor from "./GameConstructor.js";
 import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
 import Handgestrue from "./Handgestrue.js";
-    
+import { gameScreen } from "./StartAndEnd.js";
+
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
 class Game {
     constructor() {
         //Key 
-        this.spacePressed = false;
         this.handgestrue = new Handgestrue(this);
         //Src image
         this.gameConstructor = new GameConstructor(this);
@@ -25,7 +25,7 @@ class Game {
         this.scoreOverall = 0;
         this.scorePlayers = [];
         //Start screen
-        this.gameScreen = gameScreen(this);
+        this.gameScreen = gameScreen(this, gameCtx, gameCanvas);
         //Time
         this.startTime = 0;
         this.currentTime = 0;
@@ -71,7 +71,7 @@ class Game {
         //Player
         let gap = 0;
         this.players.forEach((player) => {
-            player.drawPlayer(gap + 15, 60, gap + 50, 30);
+            player.draw(gap + 50, 30, gap + 15, 60, gap + 15, 90);
             gap += 250;
         });
 
@@ -113,7 +113,7 @@ class Game {
 
         //Player
         this.playerInGame.forEach(player => {
-            player.updatePlayer(deltaTime);
+            player.update(deltaTime);
         });
 
         this.playerInGame = this.playerInGame.filter(player => player.isAlive);
@@ -121,7 +121,7 @@ class Game {
         if(this.playerInGame.length === 0) {
             this.isGameOver = true;
             this.players.forEach(player => {
-                player.resetPlayer();
+                player.reset();
             });
             this.playerInGame = [...this.players];
         }
@@ -131,7 +131,6 @@ class Game {
         this.playerInGame = [...this.players]
         this.currentTime = 0;
         this.startTime = 0;
-        this.spacePressed = false;
         this.isGameStarted = false;
         this.isGameOver = false;
         this.scoreOverall = 0;
@@ -151,175 +150,5 @@ class Game {
         return (performance.now() - this.startTime) / 1000; 
     }
 }
-window.addEventListener('load', function () {
-    gameCanvas.width = window.innerWidth;
-    gameCanvas.height = window.innerHeight;
-    const gameflabird = document.querySelector(".game-fla-bird");
-    const handCanvas = document.querySelector("#handCanvas");
 
-    document.querySelector(".btn-start-game").addEventListener("click", () => {
-        document.querySelector(".header").classList.replace("visible", "hidden");
-        document.querySelector(".tutorial").classList.replace("hidden", "visible");
-    });
-
-    const buttonPlayer = document.querySelectorAll('.btn-play');
-    const game = new Game();
-
-    buttonPlayer.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            document.querySelector(".tutorial").classList.replace("visible", "hidden");
-            gameflabird.classList.replace("hidden", "visible");
-            if(index === 0) {
-                game.handgestrue.start();
-                game.udpatePlayerHandgestrue(index);
-            } else {
-                game.updatePlayers(index);
-            }
-        });
-    });
-
-    const key = ["Space", "KeyA", "KeyL"];
-    window.addEventListener("keydown", (e) => {
-        if(gameflabird.classList.contains("visible")) {
-            if(e.code === "KeyO") {
-                handCanvas.classList.remove("hidden");
-            }
-            if(e.code === "KeyQ") {
-                handCanvas.classList.add("hidden");
-            }
-            if(e.code === "Enter") {
-                game.startTime = performance.now();
-                game.isGameStarted = true;
-                game.render(); 
-            }              
-        }
-
-        game.players.forEach((player, index) => {
-            if(game.isGameStarted) {
-                let keyPlay = key[index];
-                if(player.currentHealth > 0 && !player.pressed && e.code === keyPlay) {
-                    player.flap();
-                    player.pressed = true;
-                }
-            }
-        });
-    });
-
-    window.addEventListener("keyup" , (e) => {
-        game.players.forEach((player, index) => {
-            const playerKey = key[index];
-            if (e.code === playerKey) {
-                player.pressed = false;
-            }
-        });
-    });
-    //Demo mobile
-    gameflabird.onclick = () => {
-        game.startTime = performance.now();
-        game.isGameStarted = true;
-        game.render(); 
-    };
-
-    gameflabird.addEventListener('touchstart', function(event) {
-        game.players[0].flap();
-    });
-    
-    let lastTime = 0;
-    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    function animate(timeStamp) {  
-        const deltaTime = (timeStamp - lastTime) / 1000;    
-        lastTime = timeStamp;
-
-        game.render(deltaTime);
-        requestAnimationFrame(animate);
-    }
-    animate(0);
-});
-
-function gameScreen(game) {
-    let gameOverDisplayed = false;
-
-    function drawBlurredBackground() {
-        gameCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-    }
-
-    function drawStartScreen () {
-        gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        gameCtx.drawImage(game.spaceBackground, 0, 0, gameCanvas.width, gameCanvas.height);
-        gameCtx.fillStyle = 'white';
-        gameCtx.font = '30px Ubuntu';
-        gameCtx.textAlign = 'center';
-        gameCtx.fillText('Press Enter to start', gameCanvas.width / 2, gameCanvas.height / 2);
-    }
-
-    function drawGameOverScreen () {
-        if(gameOverDisplayed) return;
-
-        game.isGameStarted = false;
-        gameOverDisplayed = true;
-
-        drawBlurredBackground(gameCtx, gameCanvas);
-        const gameOverContainer = document.createElement("div");
-        gameOverContainer.className = "game-over-container";
-        const gameOverTitle = document.createElement("div");
-
-        gameOverTitle.className = "game-over-title";
-        gameOverTitle.innerText = "Game Over"
-        gameOverContainer.appendChild(gameOverTitle);
-
-        const scores = document.createElement('div');
-        scores.className = 'scores';
-        gameOverContainer.appendChild(scores);
-
-        game.scorePlayers.forEach((player) => {
-            let scoreText = document.createElement("div");
-            scoreText.className = "score-text";
-            scoreText.innerText = `Score player ${player.id}: ${player.score}`;
-            scores.appendChild(scoreText);
-        });
-
-        const playAgainText = document.createElement('div');
-        playAgainText.className = 'play-again-text';
-        playAgainText.innerText = 'Play Again?';
-        gameOverContainer.appendChild(playAgainText);
-
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'button-container';
-
-        const yesButton = document.createElement('button');
-        yesButton.className = 'restart-btn';
-        yesButton.innerText = 'YES';
-        yesButton.onclick = () => {
-            game.reset();
-            drawStartScreen();
-            document.body.removeChild(gameOverContainer);
-            gameOverDisplayed = false;
-        };
-        buttonContainer.appendChild(yesButton);
-
-        const noButton = document.createElement('button');
-        noButton.className = 'restart-btn';
-        noButton.innerText = 'NO';
-        noButton.onclick = () => {
-            game.handgestrue.stop();
-            game.reset();
-            document.querySelector('.game-fla-bird').classList.replace('visible', 'hidden');
-            document.querySelector('.tutorial').classList.replace('hidden', 'visible');
-
-            document.body.removeChild(gameOverContainer);
-            gameOverDisplayed = false;
-        };
-        buttonContainer.appendChild(noButton);
-
-        gameOverContainer.appendChild(buttonContainer);
-
-        document.body.appendChild(gameOverContainer);
-    }
-
-    return {
-        drawBlurredBackground,
-        drawStartScreen,
-        drawGameOverScreen
-    };
-}
+export default Game;

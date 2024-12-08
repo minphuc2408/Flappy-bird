@@ -11,8 +11,11 @@ class Player {
         this.isAlive = true;
         this.isFalling = false;
         this.maxHealth = 2000;
+        this.maxMana = 200;
         this.currentHealth = this.maxHealth;
+        this.currentMana = this.maxMana;
         this.displayHealth = this.currentHealth;
+        this.displayMana = this.currentMana;
         this.score = 0;
         this.shieldActive = false;
         this.pressed = false;
@@ -30,24 +33,18 @@ class Player {
         this.v = this.l;
     }
 
-    updatePlayer(deltaTime) {
+    update(deltaTime) {
         this.v += this.g * deltaTime;
         this.y += this.v * deltaTime;
         this.score = this.game.scoreOverall;
         this.smoke.updateSmokeParticles(deltaTime);
-        if (this.currentHealth <= 0) {
+        if (this.currentHealth <= 0 || this.currentMana <= 0) {
+            console.log("1")
             this.isFalling = true;
         }
 
         if(this.isFalling) {
             this.y += 0.4 * 144 * deltaTime;
-        }
-
-        if (this.displayHealth > this.currentHealth) {
-            this.displayHealth -= 10;
-            if(this.displayHealth < this.currentHealth) {
-                this.displayHealth = this.currentHealth;
-            }
         }
 
         if(this.currentHealth < this.maxHealth * 0.3) {
@@ -75,20 +72,33 @@ class Player {
 
             this.game.scorePlayers.sort((a, b) => a.id - b.id);
         }
+
+        if(this.displayHealth > this.currentHealth) {
+            this.displayHealth -= 5;
+        } else {
+            this.displayHealth = this.currentHealth;
+        }
+
+        if(this.displayMana > this.currentMana) {
+            this.displayMana -= 0.5;
+        } else {
+            this.displayMana = this.currentMana;
+        }
     }
 
-    drawPlayer(healthX, healthY, scoreX, scoreY) {
+    draw(scoreX, scoreY, healthX, healthY, manaX, manaY) {
         if (this.isAlive) {
             this.gameCtx.save();
             this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
             this.gameCtx.restore();
-            this.drawScorePlayer(scoreX, scoreY);
-            this.drawHealthPlayer(healthX, healthY);
+            this.drawScore(scoreX, scoreY);
+            this.drawHealth(healthX, healthY);
+            this.drawMana(manaX, manaY);
             this.smoke.drawSmokeParticles();
         }
     }
 
-    drawHealthPlayer(healthX, healthY) {
+    drawHealth(healthX, healthY) {
         this.gameCtx.save(); 
         this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
@@ -96,7 +106,7 @@ class Player {
 
     }
 
-    drawScorePlayer(scoreX, scoreY) {
+    drawScore(scoreX, scoreY) {
         this.gameCtx.save();
         this.gameCtx.fillStyle = "#fff";
         this.gameCtx.font = "20px Ubuntu";
@@ -104,9 +114,18 @@ class Player {
         this.gameCtx.restore();
     }
 
-    resetPlayer() {
+    drawMana(manaX, manaY) {
+        this.gameCtx.save();
+        this.gameCtx.fillStyle = "rgba(0, 214, 255, 1)";
+        this.gameCtx.fillRect(manaX, manaY, Math.max((this.displayMana / this.maxMana) * 200, 0), 10);
+        this.gameCtx.restore();
+    }
+
+    reset() {
+        this.currentMana = this.maxMana;
         this.currentHealth = this.maxHealth;
         this.displayHealth = this.maxHealth;
+        this.displayMana = this.maxMana;
         this.isAlive = true;
         this.isFalling = false;
         this.score = 0;

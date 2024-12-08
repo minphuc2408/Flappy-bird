@@ -124,20 +124,6 @@
     <video id="video" width="640" height="360" autoplay hidden></video>
     <canvas id="handCanvas" width="360" height="210" class="hidden"></canvas>
 
-    <script type="module" src="./js/Game.js" autoplay defer></script>
-    <script>
-        const btnPre = document.querySelector('.btn-pre');
-        const btnNext = document.querySelector('.btn-next');
-        const firstList = document.querySelector('.first');
-        const secondList = document.querySelector('.second');
-        btnNext.onclick = () => {
-            firstList.classList.add("notvisibility");
-            secondList.classList.replace("notvisibility", "visible");
-        }
-        btnPre.onclick = () => {
-            secondList.classList.add("notvisibility");
-            firstList.classList.remove("notvisibility");
-        }
-    </script>
+    <script type="module" src="./js/App.js" autoplay defer></script>
 </body>
 </html>
