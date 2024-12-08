@@ -133,7 +133,12 @@ class ObstacleHandler {
                 player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 100);
                 player.displayHealth = player.currentHealth;
                 break;
-        }
+            case 'power':
+                player.shieldActive = true;
+                player.currentMana = Math.min(player.maxMana, player.currentMana + 100);
+                player.displayMana = player.currentMana;
+                break;
+            }
     }
     
     handleDirectCollision(player, obstacle) {
@@ -160,6 +165,10 @@ class ObstacleHandler {
                 break;
             case 'shield':
                 player.shieldActive = true;
+                break;
+            case 'power':
+                player.currentMana = Math.min(player.maxMana, player.currentMana + 100);
+                player.displayMana = player.currentMana;
                 break;
         }
     }
@@ -222,7 +231,7 @@ class ObstacleHandler {
 
     createRandomObstacleColumn(gameTime) {
         const weightedObstacleTypes = [
-            { type: 'cosmicDust', image: this.game.cosmicDustImage, weight: 16 },
+            { type: 'cosmicDust', image: this.game.cosmicDustImage, weight: 6 },
             { type: 'neptune', image: this.game.neptuneImage, weight: 10 },
             { type: 'uranus', image: this.game.uranusImage, weight: 10 },
             { type: 'saturn', image: this.game.saturnImage, weight: 10 },
@@ -233,6 +242,7 @@ class ObstacleHandler {
             { type: 'blackHole', image: this.game.blackHoleImage, weight: 4 },
             { type: 'shield', image: this.game.shieldImage, weight: 5 },
             { type: 'health', image: this.game.healthImage, weight: 5 },
+            { type: 'power', image: this.game.powerImage, weight: 10 },
         ];
 
         //Position Obstacle
@@ -521,7 +531,7 @@ class BOSS extends Enemy {
 
         if(this.timeSmallLaserActive(gameTime)) {
             this.lasers.forEach((laser) => {
-                laser.draw();
+                laser.draw( "#ff1818", "#fff");
             });
         }
         this.gameCtx.save();
@@ -617,13 +627,13 @@ class SmallLaser extends Laser {
         this.height = 14;
     }
 
-    draw() {
+    draw(BorderColor, MainColor) {
         this.gameCtx.save();
-        this.gameCtx.fillStyle = "#ff1818";
+        this.gameCtx.fillStyle = BorderColor;
         this.gameCtx.fillRect(this.x, this.y, this.width, this.height * 0.2);
-        this.gameCtx.fillStyle = "white";
+        this.gameCtx.fillStyle = MainColor;
         this.gameCtx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
-        this.gameCtx.fillStyle = "#ff1818";
+        this.gameCtx.fillStyle = BorderColor;
         this.gameCtx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
         this.gameCtx.restore();
     }
@@ -642,6 +652,7 @@ class LargeLaser extends Laser {
         if(this.y <= 0) {
             return;
         }
+        
         this.gameCtx.save();
         this.gameCtx.fillStyle = BorderColor;
         this.gameCtx.fillRect(this.x, this.y, this.width, this.height * 0.2);
@@ -653,7 +664,7 @@ class LargeLaser extends Laser {
     }
 }
 
-export { BOSS, BOSSSMALL, ObstacleHandler };
+export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser };
 
 // Tao logic de xuat hien smallLaser va largeLaser 
 // Tai dung vi tri thi moi xuat hien smallLaser va largeLaser
