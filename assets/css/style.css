@@ -21,7 +21,7 @@ body {
     background-size: cover;
     position: relative;
     margin: 0 auto;
-    bottom: -360px;
+    bottom: -400px;
     animation: rotate-earth 32s infinite linear;
 }
 
