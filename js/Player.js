@@ -1,4 +1,5 @@
 import {smokeEffect, hasShield} from "./gameEffects.js";
+import { SmallLaser, LargeLaser } from "./GameObstacles.js";
 
 class Player {
     constructor(game, image, gameCtx, id) {
@@ -7,11 +8,13 @@ class Player {
         this.gameCtx = gameCtx;
         this.id = id;
         this.smoke = smokeEffect(this.gameCtx);
+        this.lasers = [];
+        this.largeLaser = new LargeLaser(this, this.gameCtx);
 
         this.isAlive = true;
         this.isFalling = false;
         this.maxHealth = 2000;
-        this.maxMana = 200;
+        this.maxMana = 400;
         this.currentHealth = this.maxHealth;
         this.currentMana = this.maxMana;
         this.displayHealth = this.currentHealth;
@@ -19,14 +22,15 @@ class Player {
         this.score = 0;
         this.shieldActive = false;
         this.pressed = false;
+        this.checkShoot = false;
 
         this.g = 1050;
         this.l = -400;
         this.v = 0;
         this.width = 60;
         this.height = 60;
-        this.x =  gameCanvas.width / 3;
-        this.y =  gameCanvas.height / 2 - this.height / 2;
+        this.x = gameCanvas.width / 3;
+        this.y = gameCanvas.height / 2 - this.height / 2;
     }
 
     flap() {
@@ -39,11 +43,11 @@ class Player {
         this.score = this.game.scoreOverall;
         this.smoke.updateSmokeParticles(deltaTime);
         if (this.currentHealth <= 0 || this.currentMana <= 0) {
-            console.log("1")
             this.isFalling = true;
         }
 
         if(this.isFalling) {
+            this.checkShoot = false;
             this.y += 0.4 * 144 * deltaTime;
         }
 
@@ -60,7 +64,7 @@ class Player {
             this.v = 0;
         }
 
-        if (this.y -this.height >= gameCanvas.height) {
+        if (this.y - this.height >= gameCanvas.height) {
             this.isAlive = false;
         }
 
@@ -84,9 +88,17 @@ class Player {
         } else {
             this.displayMana = this.currentMana;
         }
+
+        if(this.checkShoot) {
+            this.currentMana -= 1;
+        }
+
+        console.log(this.currentMana);
+
+        this.updatePositionLargeLaser();
     }
 
-    draw(scoreX, scoreY, healthX, healthY, manaX, manaY) {
+    draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
         if (this.isAlive) {
             this.gameCtx.save();
             this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
@@ -94,6 +106,7 @@ class Player {
             this.drawScore(scoreX, scoreY);
             this.drawHealth(healthX, healthY);
             this.drawMana(manaX, manaY);
+            this.drawImage(imageX, imageY);
             this.smoke.drawSmokeParticles();
         }
     }
@@ -121,14 +134,37 @@ class Player {
         this.gameCtx.restore();
     }
 
+    drawImage(iamgeX, imageY) {
+        this.gameCtx.save();
+        this.gameCtx.drawImage(this.image, iamgeX, imageY, 20, 20);
+        this.gameCtx.restore();
+    }
+
+    updatePositionLargeLaser() {
+        this.largeLaser.x = this.x + this.width / 2;
+        this.largeLaser.width = gameCanvas.width - this.x;
+        this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
+    }
+
+    drawLargeLaser(BorderColor, MainColor) {
+        if(this.checkShoot) {
+            this.largeLaser.draw(BorderColor, MainColor);
+        }
+    }
+
+    shoot() {
+
+    }
+
     reset() {
         this.currentMana = this.maxMana;
+        this.displayMana = this.maxMana;
         this.currentHealth = this.maxHealth;
         this.displayHealth = this.maxHealth;
-        this.displayMana = this.maxMana;
         this.isAlive = true;
         this.isFalling = false;
         this.score = 0;
+        this.checkShoot = false;
 
         this.x = gameCanvas.width / 3;
         this.y = gameCanvas.height / 2;
