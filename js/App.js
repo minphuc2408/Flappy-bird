@@ -45,7 +45,8 @@ window.addEventListener('load', function () {
         });
     });
 
-    const key = ["Space", "KeyA", "KeyL"];
+    const keyFlap = ["Space", "KeyA", "KeyK"];
+    const keyShoot = ["KeyM", "KeyS", "KeyL"];
     window.addEventListener("keydown", (e) => {
         if(gameflabird.classList.contains("visible")) {
             if(e.code === "KeyO") {
@@ -63,21 +64,32 @@ window.addEventListener('load', function () {
 
         game.players.forEach((player, index) => {
             if(game.isGameStarted) {
-                let keyPlay = key[index];
-                if(!player.isFalling && !player.pressed && e.code === keyPlay) {
+                let keyflap = keyFlap[index];
+                let keyshoot = keyShoot[index];
+                if(!player.isFalling && !player.pressed && e.code === keyflap) {
                     player.flap();
                     player.currentMana -= 5;
                     player.pressed = true;
                 }
+                if(e.code === keyshoot) {
+                    player.checkShoot = true;
+                }
+
+                console.log(e.code);
             }
         });
     });
 
     window.addEventListener("keyup" , (e) => {
         game.players.forEach((player, index) => {
-            const playerKey = key[index];
+            let playerKey = keyFlap[index];
+            let shootKey = keyShoot[index];
             if (e.code === playerKey) {
                 player.pressed = false;
+            }
+
+            if (e.code === shootKey) {
+                player.checkShoot = false;
             }
         });
     });
