@@ -22,17 +22,6 @@ class ObstacleHandler {
         this.missiles = [];
         this.lastMissileTime = 0;
         this.missileInterval = 10;
-
-        this.iceballs = [];
-        this.fireballs =[];
-        this.effectStartTime = 0;
-        this.isBurning = false;
-        this.lastBurnSecond = 0;
-        this.isFreezing = false;  
-        this.lastFreezeSecond = 0;
-        this.lastTimeEffect = 0;
-        this.timeEffectInterval = 5;
-
     }
 
     reset(){

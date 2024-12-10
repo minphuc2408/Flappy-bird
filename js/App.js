@@ -71,11 +71,11 @@ window.addEventListener('load', function () {
                     player.currentMana -= 5;
                     player.pressed = true;
                 }
-                if(e.code === keyshoot) {
-                    player.checkShoot = true;
-                }
+                // if(e.code === keyshoot) {
+                //     player.checkShoot = true;
+                // }
 
-                console.log(e.code);
+                // console.log(e.code);
             }
         });
     });

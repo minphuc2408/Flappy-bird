@@ -71,17 +71,17 @@ class Game {
         //Player
         let gap = 0;
         this.players.forEach((player, index) => {
-            switch (index + 1) {
-                case 1:
-                    player.drawLargeLaser("#ACE6FF", "#73D5FF");
-                    break;
-                case 2: 
-                    player.drawLargeLaser("#E0FFFF", "#FFC0CB");
-                    break;
-                case 3:
-                    player.drawLargeLaser("#FFF5F7", "#AFEEEE");
-                    break;
-            }
+            // switch (index + 1) {
+            //     case 1:
+            //         player.drawLargeLaser("#ACE6FF", "#73D5FF");
+            //         break;
+            //     case 2: 
+            //         player.drawLargeLaser("#E0FFFF", "#FFC0CB");
+            //         break;
+            //     case 3:
+            //         player.drawLargeLaser("#FFF5F7", "#AFEEEE");
+            //         break;
+            // }
             player.draw(gap + 80, 30, gap + 15, 60, gap + 15, 90, gap + 10, 10);
             gap += 250;
         });

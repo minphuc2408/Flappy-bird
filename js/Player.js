@@ -14,7 +14,7 @@ class Player {
         this.isAlive = true;
         this.isFalling = false;
         this.maxHealth = 2000;
-        this.maxMana = 400;
+        this.maxMana = 300;
         this.currentHealth = this.maxHealth;
         this.currentMana = this.maxMana;
         this.displayHealth = this.currentHealth;
@@ -47,7 +47,7 @@ class Player {
         }
 
         if(this.isFalling) {
-            this.checkShoot = false;
+            // this.checkShoot = false;
             this.y += 0.4 * 144 * deltaTime;
         }
 
@@ -90,12 +90,10 @@ class Player {
         }
 
         if(this.checkShoot) {
-            this.currentMana -= 1;
+            this.currentMana -= 60 * deltaTime;
         }
 
-        console.log(this.currentMana);
-
-        this.updatePositionLargeLaser();
+        // this.updatePositionLargeLaser();
     }
 
     draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
@@ -140,21 +138,21 @@ class Player {
         this.gameCtx.restore();
     }
 
-    updatePositionLargeLaser() {
-        this.largeLaser.x = this.x + this.width / 2;
-        this.largeLaser.width = gameCanvas.width - this.x;
-        this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
-    }
+    // updatePositionLargeLaser() {
+    //     this.largeLaser.x = this.x + this.width / 2;
+    //     this.largeLaser.width = gameCanvas.width - this.x;
+    //     this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
+    // }
 
-    drawLargeLaser(BorderColor, MainColor) {
-        if(this.checkShoot) {
-            this.largeLaser.draw(BorderColor, MainColor);
-        }
-    }
+    // drawLargeLaser(BorderColor, MainColor) {
+    //     if(this.checkShoot) {
+    //         this.largeLaser.draw(BorderColor, MainColor);
+    //     }
+    // }
 
-    shoot() {
+    // shoot() {
 
-    }
+    // }
 
     reset() {
         this.currentMana = this.maxMana;
@@ -165,6 +163,7 @@ class Player {
         this.isFalling = false;
         this.score = 0;
         this.checkShoot = false;
+        this.hasShield = false;
 
         this.x = gameCanvas.width / 3;
         this.y = gameCanvas.height / 2;

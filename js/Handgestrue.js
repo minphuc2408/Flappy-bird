@@ -95,6 +95,7 @@ class Handgestrue {
             for (const landmarks of results.multiHandLandmarks) {
                 if (this.isHandClosed(landmarks) && !this.hold && !this.game.players[0].isFalling) {
                     this.game.players[0].flap();
+                    this.game.players[0].currentMana -= 5;  
                     this.hold = true;
                 } else if (!this.isHandClosed(landmarks)) {
                     this.hold = false;
