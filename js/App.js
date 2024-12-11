@@ -5,6 +5,14 @@ const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
 window.addEventListener('load', function () {
+    let playCount = parseInt(localStorage.getItem('playCount')) || 0;
+
+    function startGame() {
+        playCount++;
+        localStorage.setItem('playCount', playCount);
+        console.log(`Số lượt chơi: ${playCount}`);
+    }
+    
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
 
@@ -58,6 +66,7 @@ window.addEventListener('load', function () {
             if(e.code === "Enter") {
                 game.startTime = performance.now();
                 game.isGameStarted = true;
+                startGame();
                 game.render(); 
             }              
         }
