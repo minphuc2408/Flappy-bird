@@ -103,19 +103,19 @@ window.addEventListener('load', function () {
         });
     });
     //Demo mobile
-    let hasTouch = false;
     gameflabird.onclick = () => {
-        if(!hasTouch) {
-            hasTouch = true;
+        if(!game.hasTouch) {
+            game.hasTouch = true;
             game.startTime = performance.now();
             game.isGameStarted = true;
             game.render(); 
         }
     };
-
+    
     gameflabird.addEventListener('touchstart', function(event) {
-        game.players[0].flap();
+        if(game.players[0].currentHealth > 0) game.players[0].flap();
     });
+
 
     let lastTime = 0;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
