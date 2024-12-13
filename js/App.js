@@ -146,10 +146,10 @@ window.addEventListener('load', function () {
         }
     };
     
-
     gameflabird.addEventListener('touchstart', function(event) {
         if(game.players[0].currentHealth > 0) game.players[0].flap();
     });
+
 
     let lastTime = 0;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
