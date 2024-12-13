@@ -9,6 +9,7 @@ class Handgestrue {
         this.handCanvas = handCanvas;
         this.hold = false;
         this.isRunning = false;
+        this.landmarks = null;
 
         this.hands = new Hands({
             locateFile: (file) => {
@@ -47,6 +48,7 @@ class Handgestrue {
     }
 
     async stop() {
+        this.landmarks = null; // 1 bug 3 hours (Loi 1P tat gameover dot ngot)
         if (!this.isRunning) {
             return;
         }
@@ -55,19 +57,65 @@ class Handgestrue {
             this.camera = null;
         }
         this.handCtx.clearRect(0, 0, this.handCanvas.width, this.handCanvas.height);
-
         this.isRunning = false;
     }
 
-    isHandClosed(landmarks) {
-        const tipIds = [4, 8, 12, 16, 20];
-        const baseIds = [2, 5, 9, 13, 17];
+    numberOne() {
+        if(!this.landmarks) return false;
+
+        const tipIds = [12, 16, 20];
+        const baseIds = [9, 13, 17];
 
         let closedFingers = 0;
 
         for (let i = 0; i < tipIds.length; i++) {
-            const tip = landmarks[tipIds[i]];
-            const base = landmarks[baseIds[i]];
+            const tip = this.landmarks[tipIds[i]];
+            const base = this.landmarks[baseIds[i]];
+
+            if (tip.y > base.y) {
+                closedFingers++;
+            }
+        }
+
+        return closedFingers >= 3 && this.landmarks[8].y < this.landmarks[5].y;
+    }
+    
+    numberTwo() {
+        if(!this.landmarks) return false;
+        const tipIds = [16, 20];
+        const baseIds = [13, 17];
+        let closedFingers = 0;
+
+        for (let i = 0; i < tipIds.length; i++) {
+            const tip = this.landmarks[tipIds[i]];
+            const base = this.landmarks[baseIds[i]];
+
+            if (tip.y > base.y) {
+                closedFingers++;
+            }
+        }
+
+        return closedFingers >= 2 
+        && this.landmarks[8].y < this.landmarks[5].y 
+        && this.landmarks[12].y < this.landmarks[9].y;
+    }
+
+    pauseGame() {
+        if(!this.landmarks) return false;   
+        return this.landmarks[0].y >= 1;
+    }
+
+    isHandClosed() {
+        if (!this.landmarks) return false;
+
+        const tipIds = [8, 12, 16, 20];
+        const baseIds = [5, 9, 13, 17];
+
+        let closedFingers = 0;
+
+        for (let i = 0; i < tipIds.length; i++) {
+            const tip = this.landmarks[tipIds[i]];
+            const base = this.landmarks[baseIds[i]];
 
             if (tip.y > base.y) {
                 closedFingers++;
@@ -75,6 +123,12 @@ class Handgestrue {
         }
 
         return closedFingers >= 4;
+    }
+
+    startGame() {
+        this.game.startTime = performance.now();
+        this.game.isGameStarted = true;
+        this.game.render();
     }
 
     drawHandLandmarks(results) {
@@ -93,14 +147,10 @@ class Handgestrue {
     handleHandGestures(results) {
         if (results.multiHandLandmarks) {
             for (const landmarks of results.multiHandLandmarks) {
-                if (this.isHandClosed(landmarks) && !this.hold && !this.game.players[0].isFalling) {
-                    this.game.players[0].flap();
-                    this.game.players[0].currentMana -= 5;  
-                    this.hold = true;
-                } else if (!this.isHandClosed(landmarks)) {
-                    this.hold = false;
-                }
+                this.landmarks = landmarks;
             }
+        } else {
+            this.landmarks = null;
         }
     }
 
@@ -113,4 +163,3 @@ class Handgestrue {
 }
 
 export default Handgestrue;
-

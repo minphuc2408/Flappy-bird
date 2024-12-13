@@ -1,17 +1,17 @@
-    
-import Game from "./Game.js"
+import { GameHard ,GameMedium, GameEasy, GameHandGesture } from './game.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
 window.addEventListener('load', function () {
-    let playCount = parseInt(localStorage.getItem('playCount')) || 0;
+    // let playCount = parseInt(localStorage.getItem('playCount')) || 0;
 
-    function startGame() {
-        playCount++;
-        localStorage.setItem('playCount', playCount);
-        console.log(`Số lượt chơi: ${playCount}`);
-    }
+    // function startGame() {
+    //     playCount++;
+    //     localStorage.setItem('playCount', playCount);
+    //     console.log(`Số lượt chơi: ${playCount}`);
+    // }
+    let game;
     
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
@@ -22,22 +22,51 @@ window.addEventListener('load', function () {
     const btnNext = document.querySelector('.btn-next');
     const firstList = document.querySelector('.first');
     const secondList = document.querySelector('.second');
+    const thirdList = document.querySelector('.third');
+    const choicePlayer = document.querySelectorAll('.choice-player-game');
 
-    document.querySelector(".btn-start-game").addEventListener("click", () => {
+    document.querySelector(".btn-start-game").addEventListener("click", (e) => {
         document.querySelector(".header").classList.replace("visible", "hidden");
         document.querySelector(".tutorial").classList.replace("hidden", "visible");
+        
     });
 
+    const arrayList = [firstList, secondList, thirdList];
+    let currentIndex = 0;
     btnNext.onclick = () => {
-        firstList.classList.add("notvisibility");
-        secondList.classList.replace("notvisibility", "visible");
-    }
-    btnPre.onclick = () => {
-        secondList.classList.add("notvisibility");
-        firstList.classList.remove("notvisibility");
-    }
 
-    const game = new Game();
+        if(currentIndex < arrayList.length - 1) {
+            arrayList[currentIndex].classList.replace("visible", "notvisibility");
+            arrayList[currentIndex + 1].classList.replace("notvisibility", "visible");
+            currentIndex++;
+        }
+    };
+    btnPre.onclick = () => {
+        if(currentIndex <= arrayList.length - 1 && currentIndex > 0) {
+            arrayList[currentIndex].classList.replace("visible", "notvisibility");
+            arrayList[currentIndex - 1].classList.replace("notvisibility", "visible");
+            currentIndex--;
+        }
+    };
+
+    
+    choicePlayer.forEach((key, index) => {
+        key.addEventListener('click', () => {
+            switch(index) {
+                case 0:
+                    game = new GameEasy();
+                    break;
+                case 1:
+                    game = new GameMedium();
+                    break;
+                case 2:
+                    game = new GameHard();
+                    break;
+                }
+            document.querySelector(".choice-player").classList.add("hidden");
+            document.querySelector(".button-player ").classList.remove("hidden");
+        });
+    });
 
     const buttonPlayer = document.querySelectorAll('.btn-play');
     buttonPlayer.forEach((btn, index) => {
@@ -45,6 +74,7 @@ window.addEventListener('load', function () {
             document.querySelector(".tutorial").classList.replace("visible", "hidden");
             gameflabird.classList.replace("hidden", "visible");
             if(index === 0) {
+                game = new GameHandGesture();
                 game.handgestrue.start();
                 game.udpatePlayerHandgestrue(index);
             } else {
@@ -66,9 +96,13 @@ window.addEventListener('load', function () {
             if(e.code === "Enter") {
                 game.startTime = performance.now();
                 game.isGameStarted = true;
-                startGame();
+                // startGame();
                 game.render(); 
-            }              
+            }  
+            if(e.code === "KeyP") {
+                game.pause = true;
+                game.pauseTime = performance.now();
+            }     
         }
 
         game.players.forEach((player, index) => {
@@ -103,18 +137,18 @@ window.addEventListener('load', function () {
         });
     });
     //Demo mobile
-    let hasTouch = false;
     gameflabird.onclick = () => {
-        if(!hasTouch) {
-            hasTouch = true;
+        if(!game.hasTouch) {
+            game.hasTouch = true;
             game.startTime = performance.now();
             game.isGameStarted = true;
             game.render(); 
         }
     };
+    
 
     gameflabird.addEventListener('touchstart', function(event) {
-        game.players[0].flap();
+        if(game.players[0].currentHealth > 0) game.players[0].flap();
     });
 
     let lastTime = 0;
@@ -122,8 +156,9 @@ window.addEventListener('load', function () {
     function animate(timeStamp) {  
         const deltaTime = (timeStamp - lastTime) / 1000;    
         lastTime = timeStamp;
-
-        game.render(deltaTime);
+        if(game !== undefined) {
+            game.render(deltaTime);
+        }
         requestAnimationFrame(animate);
     }
     animate(0);

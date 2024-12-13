@@ -14,11 +14,8 @@ class Player {
         this.isAlive = true;
         this.isFalling = false;
         this.maxHealth = 2000;
-        this.maxMana = 300;
         this.currentHealth = this.maxHealth;
-        this.currentMana = this.maxMana;
         this.displayHealth = this.currentHealth;
-        this.displayMana = this.currentMana;
         this.score = 0;
         this.shieldActive = false;
         this.pressed = false;
@@ -42,7 +39,7 @@ class Player {
         this.y += this.v * deltaTime;
         this.score = this.game.scoreOverall;
         this.smoke.updateSmokeParticles(deltaTime);
-        if (this.currentHealth <= 0 || this.currentMana <= 0) {
+        if (this.currentHealth <= 0) {
             this.isFalling = true;
         }
 
@@ -83,15 +80,9 @@ class Player {
             this.displayHealth = this.currentHealth;
         }
 
-        if(this.displayMana > this.currentMana) {
-            this.displayMana -= 0.5;
-        } else {
-            this.displayMana = this.currentMana;
-        }
-
-        if(this.checkShoot) {
-            this.currentMana -= 60 * deltaTime;
-        }
+        // if(this.checkShoot) {
+        //     this.currentMana -= 60 * deltaTime;
+        // }
 
         // this.updatePositionLargeLaser();
     }
@@ -103,7 +94,6 @@ class Player {
             this.gameCtx.restore();
             this.drawScore(scoreX, scoreY);
             this.drawHealth(healthX, healthY);
-            this.drawMana(manaX, manaY);
             this.drawImage(imageX, imageY);
             this.smoke.drawSmokeParticles();
         }
@@ -113,7 +103,11 @@ class Player {
         this.gameCtx.save(); 
         this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
-        this.gameCtx.restore(); 
+        this.gameCtx.strokeStyle = "#333"; 
+        this.gameCtx.lineWidth = 0.76; 
+        this.gameCtx.strokeRect(healthX, healthY, 200, 20); 
+
+        this.gameCtx.restore();
 
     }
 
@@ -122,13 +116,6 @@ class Player {
         this.gameCtx.fillStyle = "#fff";
         this.gameCtx.font = "20px Ubuntu";
         this.gameCtx.fillText("Score: " + this.score, scoreX, scoreY);
-        this.gameCtx.restore();
-    }
-
-    drawMana(manaX, manaY) {
-        this.gameCtx.save();
-        this.gameCtx.fillStyle = "rgba(0, 214, 255, 1)";
-        this.gameCtx.fillRect(manaX, manaY, Math.max((this.displayMana / this.maxMana) * 200, 0), 10);
         this.gameCtx.restore();
     }
 
@@ -173,4 +160,40 @@ class Player {
     }
 }
 
-export default Player;
+class PlayerMedium extends Player {
+    constructor(game, image, gameCtx, id) {
+        super(game, image, gameCtx, id);
+        this.maxMana = 250;
+        this.currentMana = this.maxMana;
+        this.displayMana = this.currentMana;
+    }
+
+    update(deltaTime) {
+        super.update(deltaTime);
+        if (this.currentMana <= 0) {
+            this.isFalling = true;
+        }
+
+        if(this.displayMana > this.currentMana) {
+            this.displayMana -= 0.5;
+        } else {
+            this.displayMana = this.currentMana;
+        }
+    }
+
+    drawMana(manaX, manaY) {
+        this.gameCtx.save();
+        this.gameCtx.fillStyle = "rgba(0, 214, 255, 1)";
+        this.gameCtx.fillRect(manaX, manaY, Math.max((this.displayMana / this.maxMana) * 200, 0), 10);
+        this.gameCtx.restore();
+    }
+
+    draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
+        super.draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY);
+        if(this.isAlive) {
+            this.drawMana(manaX, manaY);
+        }
+    }
+}
+
+export {Player, PlayerMedium};

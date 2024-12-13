@@ -8,20 +8,21 @@ class ObstacleHandler {
     constructor(game, gameCtx) {
         this.game = game;
         this.gameCtx = gameCtx;
-        
+            
         this.obstacles = [];
         this.obstacleWidth = 60;
         this.obstacleHeight = 60;
         this.obstaclesInterval = 1;
         this.obstacleGap = 150;
         this.framesSinceLastObstacle = 0;
+        this.obstacleCount = 3;
 
         this.asteroids = [];
         this.lastAsteroidTime = 0;
-        this.asteroidInterval = 10;
+        this.asteroidInterval = 20;
         this.missiles = [];
         this.lastMissileTime = 0;
-        this.missileInterval = 10;
+        this.missileInterval = 15;
     }
 
     reset(){
@@ -42,18 +43,10 @@ class ObstacleHandler {
         this.lastFreezeSecond = 0;
     }
 
-    update(gameTime, deltaTime) {
+    update(deltaTime) {
         this.updateObstacles(deltaTime);
         this.updateMovingObstacles(this.asteroids, deltaTime, "asteroid");
         this.updateMovingObstacles(this.missiles, deltaTime, "missile");
-        if(gameTime % TIMEINTERVAL <= 30) {
-            this.framesSinceLastObstacle += deltaTime;
-            this.createRandomMovingObstacles(gameTime);
-            if(this.framesSinceLastObstacle >= this.obstaclesInterval) {
-                this.createRandomObstacleColumn(gameTime);
-                this.framesSinceLastObstacle = 0;
-            }
-        }
     }
 
     draw() {
@@ -236,7 +229,7 @@ class ObstacleHandler {
 
         //Position Obstacle
         const obstaclePositions = [];
-        const obstacleCount = 4;
+        const obstacleCount = this.obstacleCount;
         const minGap = this.obstacleWidth + this.obstacleGap;
         const getRandomYPosition =  (obstaclePositions, minGap, canvasHeight) => {
             let obstacleY;

@@ -12,6 +12,13 @@ body {
     font-size: 1.6rem;
 }
 
+img {
+    margin: 0 10px;
+    width: 50px;
+    height: 50px;
+    aspect-ratio: 1 / 1;
+}
+
 .earth {
     width: 1000px;
     height: 1000px;
@@ -39,10 +46,12 @@ body {
 }
 
 .visible {
+    pointer-events: auto;
     display: block;
 }
 
 .notvisibility {
+    pointer-events: none;
     visibility: hidden;
 }
 
@@ -91,7 +100,7 @@ h1 {
     font-size: 8rem;
 }
 
-.button-player {
+.button-player, .choice-player {
     position: absolute;
     bottom: 0;
     margin-top: 30px;
@@ -160,8 +169,7 @@ h1 {
     border-right: 2px solid var(--white);
 }
 
-.btn-play {
-
+.btn-play, .choice-player-game {
     margin-bottom: 40px;
 }
 
@@ -217,6 +225,9 @@ h1 {
 }
 
 .tutorial__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.1); 
     padding: 10px 20px;
     margin: 10px 0; 
@@ -236,13 +247,17 @@ h1 {
     margin-right: 10px; 
 }
 
+.tutorial__text {
+
+}
+
 /* ========= GameCanvas ========== */
 #gameCanvas {
     width: 100%;
     height: 100%;
 }
 
-.game-over-container {
+.game-over-container, .pause-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -258,14 +273,20 @@ h1 {
     background-size: cover;
 }
 
-.game-over-title {
+.game-over-title, .pause-title {
     font-size: 64px;
     text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan;
     margin-bottom: 20px;
     animation: pulse 2s infinite;
 }
 
-.restart-btn {
+.button-container {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.restart-btn, .continue-btn {
     padding: 15px 30px;
     font-size: 20px;
     background: linear-gradient(45deg, #ff6ec4, #7873f5);
@@ -282,7 +303,7 @@ h1 {
     background: linear-gradient(45deg, #6ee2ff, #6454f0);
 }
 
-.score-text {
+.score-text, .resume-text {
     color: #FFD700; /* Màu vàng sáng */
     font-size: 30px;
     margin-bottom: 20px;
