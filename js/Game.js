@@ -11,6 +11,7 @@ class Game {
     constructor() {
         //Key 
         this.handgestrue = new Handgestrue(this);
+        this.hasTouch = false;
         //Src image
         this.gameConstructor = new GameConstructor(this);
         //Player
@@ -151,6 +152,7 @@ class Game {
         this.smallBoss.forEach(smallBoss => {
             smallBoss.reset();
         });
+        this.hasTouch =false;
     }
 
     getCurrentGameTime() {
