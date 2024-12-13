@@ -129,7 +129,7 @@ class Game {
     }
 
     reset() {
-        this.playerInGame = [...this.players]
+        this.playerInGame = [...this.players];
         this.currentTime = 0;
         this.startTime = 0;
         this.isGameStarted = false;
