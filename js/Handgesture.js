@@ -2,7 +2,7 @@ const video = document.querySelector('video');
 const handCanvas = document.querySelector('#handCanvas');
 const handCtx = handCanvas.getContext("2d");
 
-class Handgestrue {
+class Handgesture {
     constructor(game) {
         this.game = game;
         this.handCtx = handCtx;
@@ -162,4 +162,4 @@ class Handgestrue {
     }
 }
 
-export default Handgestrue;
+export default Handgesture;

@@ -73,6 +73,7 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
             document.querySelector('.tutorial').classList.replace('hidden', 'visible');
             document.querySelector('.choice-player').classList.remove('hidden');
             document.querySelector('.button-player').classList.add('hidden');
+            document.querySelector('.tutorial .button-player:last-of-type').classList.add('hidden');
 
             document.body.removeChild(gameOverContainer);
             gameOverDisplayed = false;
@@ -100,7 +101,8 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
                     document.querySelector('.tutorial').classList.replace('hidden', 'visible');
                     document.querySelector('.choice-player').classList.remove('hidden');
                     document.querySelector('.button-player').classList.add('hidden');
-        
+                    document.querySelector('.tutorial .button-player').classList.add('hidden');
+
                     if (gameOverContainer && document.body.contains(gameOverContainer)) {
                             document.body.removeChild(gameOverContainer);
                         }

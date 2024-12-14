@@ -163,7 +163,7 @@ class Player {
 class PlayerMedium extends Player {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
-        this.maxMana = 250;
+        this.maxMana = 350;
         this.currentMana = this.maxMana;
         this.displayMana = this.currentMana;
     }

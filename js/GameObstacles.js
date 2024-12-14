@@ -8,14 +8,16 @@ class ObstacleHandler {
     constructor(game, gameCtx) {
         this.game = game;
         this.gameCtx = gameCtx;
-            
+        
+        this.obstaclePositions = [];
         this.obstacles = [];
         this.obstacleWidth = 60;
         this.obstacleHeight = 60;
         this.obstaclesInterval = 1;
         this.obstacleGap = 150;
         this.framesSinceLastObstacle = 0;
-        this.obstacleCount = 3;
+        this.obstacleCount = 4;
+        this.timeUpdateRandom = 0;
 
         this.asteroids = [];
         this.lastAsteroidTime = 0;
@@ -23,6 +25,53 @@ class ObstacleHandler {
         this.missiles = [];
         this.lastMissileTime = 0;
         this.missileInterval = 15;
+
+        this.weightedObstacleTypes = [
+            { type: 'cosmicDust', image: this.game.cosmicDustImage, weight: 6 },
+            { type: 'neptune', image: this.game.neptuneImage, weight: 10 },
+            { type: 'uranus', image: this.game.uranusImage, weight: 10 },
+            { type: 'saturn', image: this.game.saturnImage, weight: 10 },
+            { type: 'mars', image: this.game.marsImage, weight: 10 },
+            { type: 'mercury', image: this.game.mercuryImage, weight: 10 },
+            { type: 'jupiter', image: this.game.jupiterImage, weight: 10 },
+            { type: 'venus', image: this.game.venusImage, weight: 10 },
+            { type: 'blackHole', image: this.game.blackHoleImage, weight: 4 },
+            { type: 'shield', image: this.game.shieldImage, weight: 5 },
+            { type: 'health', image: this.game.healthImage, weight: 5 },
+            { type: 'power', image: this.game.powerImage, weight: 10 },
+        ];
+
+        this.alphabetAndNumber = [    
+            {type: "A", image: this.game.letterA, weight: 1},
+            {type: "B", image: this.game.letterB, weight: 1},
+            {type: "C", image: this.game.letterC, weight: 1},
+            {type: "D", image: this.game.letterD, weight: 1},
+            {type: "E", image: this.game.letterE, weight: 1},
+            {type: "F", image: this.game.letterF, weight: 1},
+            {type: "G", image: this.game.letterG, weight: 1},
+            {type: "H", image: this.game.letterH, weight: 1},
+            {type: "I", image: this.game.letterI, weight: 1},
+            {type: "J", image: this.game.letterJ, weight: 1},
+            {type: "K", image: this.game.letterK, weight: 1},
+            {type: "L", image: this.game.letterL, weight: 1},
+            {type: "M", image: this.game.letterM, weight: 1},
+            {type: "N", image: this.game.letterN, weight: 1},
+            {type: "O", image: this.game.letterO, weight: 1},
+            {type: "P", image: this.game.letterP, weight: 1},
+            {type: "Q", image: this.game.letterQ, weight: 1},
+            {type: "R", image: this.game.letterR, weight: 1},
+            {type: "S", image: this.game.letterS, weight: 1},
+            {type: "T", image: this.game.letterT, weight: 1},
+            {type: "U", image: this.game.letterU, weight: 1},
+            {type: "V", image: this.game.letterV, weight: 1},
+            {type: "W", image: this.game.letterW, weight: 1},
+            {type: "X", image: this.game.letterX, weight: 1},
+            {type: "Y", image: this.game.letterY, weight: 1},
+            {type: "Z", image: this.game.letterZ, weight: 1},
+            { type: 'health', image: this.game.healthImage, weight: 3 },
+
+        ]; 
+        this.pickRandomArray = [];
     }
 
     reset(){
@@ -33,25 +82,8 @@ class ObstacleHandler {
         this.lastAsteroidTime = 0;
         this.missiles = [];
         this.lastMissileTime = 0;
-        this.iceballs = [];
-        this.fireballs =[];
-        this.isBurning = false;
-        this.burnStartTime = null;
-        this.lastBurnSecond = 0;
-        this.isFreezing = false;
-        this.freezeStartTime = null;    
-        this.lastFreezeSecond = 0;
-    }
-
-    update(deltaTime) {
-        this.updateObstacles(deltaTime);
-        this.updateMovingObstacles(this.asteroids, deltaTime, "asteroid");
-        this.updateMovingObstacles(this.missiles, deltaTime, "missile");
-    }
-
-    draw() {
-        this.drawObstacles();
-        this.drawMovingObstacles();
+        this.pickRandomArray = [];
+        this.obstaclePositions = [];
     }
 
     checkCollision(player, obstacle) {
@@ -65,7 +97,7 @@ class ObstacleHandler {
         });
     }
     
-    updateObstacles(deltaTime) {
+    updateObstacles(gameTime, deltaTime) {
         this.updatePosition(this.obstacles, deltaTime);
     
         this.game.playerInGame.forEach((player) => {
@@ -212,24 +244,7 @@ class ObstacleHandler {
     }
 
     createRandomObstacleColumn(gameTime) {
-        const weightedObstacleTypes = [
-            { type: 'cosmicDust', image: this.game.cosmicDustImage, weight: 6 },
-            { type: 'neptune', image: this.game.neptuneImage, weight: 10 },
-            { type: 'uranus', image: this.game.uranusImage, weight: 10 },
-            { type: 'saturn', image: this.game.saturnImage, weight: 10 },
-            { type: 'mars', image: this.game.marsImage, weight: 10 },
-            { type: 'mercury', image: this.game.mercuryImage, weight: 10 },
-            { type: 'jupiter', image: this.game.jupiterImage, weight: 10 },
-            { type: 'venus', image: this.game.venusImage, weight: 10 },
-            { type: 'blackHole', image: this.game.blackHoleImage, weight: 4 },
-            { type: 'shield', image: this.game.shieldImage, weight: 5 },
-            { type: 'health', image: this.game.healthImage, weight: 5 },
-            { type: 'power', image: this.game.powerImage, weight: 10 },
-        ];
-
         //Position Obstacle
-        const obstaclePositions = [];
-        const obstacleCount = this.obstacleCount;
         const minGap = this.obstacleWidth + this.obstacleGap;
         const getRandomYPosition =  (obstaclePositions, minGap, canvasHeight) => {
             let obstacleY;
@@ -246,47 +261,50 @@ class ObstacleHandler {
             return isValidPosition ? obstacleY : null;
         }
 
-        for (let i = 0; i < obstacleCount; i++) {
-            const obstacleY = getRandomYPosition(obstaclePositions, minGap, gameCanvas.height);
+        for (let i = 0; i < this.obstacleCount; i++) {
+            const obstacleY = getRandomYPosition(this.obstaclePositions, minGap, gameCanvas.height);
             if (obstacleY !== null) {
-                obstaclePositions.push(obstacleY);
+                this.obstaclePositions.push(obstacleY);
             }
-        }
-
-        // Get random obstale type
-        const getRandomObstacleType = (weightedTypes) => {
-            const totalWeight = weightedTypes.reduce((total, item) => total + item.weight, 0);
-            const randomWeight = Math.random() * totalWeight;
-
-            let cumalativeWeight = 0;
-            for (const item of weightedTypes) {
-                cumalativeWeight += item.weight;
-                if (randomWeight < cumalativeWeight) {
-                    return item;
-                }
-            }
-        };
-
-        for (let i = 0; i <= obstaclePositions.length; i++) {
-            const randomType = getRandomObstacleType(weightedObstacleTypes);
-                this.obstacles.push({
-                    x: gameCanvas.width,
-                    y: obstaclePositions[i],
-                    type: randomType.type,
-                    image: randomType.image,
-                    isColumn: i === obstaclePositions.length,
-                    passed: false,
-                    direction: - 1,
-                    speed: 288
-                });
         }
     }
+
+    pushObstacle() {
+        this.createRandomObstacleColumn();
+        for (let i = 0; i <= this.obstaclePositions.length; i++) {
+            const randomType = this.getRandomObstacleType(this.weightedObstacleTypes);
+            this.obstacles.push({
+                x: gameCanvas.width,
+                y: this.obstaclePositions[i],
+                type: randomType.type,
+                image: randomType.image,
+                isColumn: i === this.obstaclePositions.length,
+                passed: false,
+                direction: - 1,
+                speed: 288
+            });
+        }
+        this.obstaclePositions = [];
+    }
+
+    getRandomObstacleType (weightedTypes) {
+        const totalWeight = weightedTypes.reduce((total, item) => total + item.weight, 0);
+        const randomWeight = Math.random() * totalWeight;
+
+        let cumulativeWeight = 0;
+        for (const item of weightedTypes) {
+            cumulativeWeight += item.weight;
+            if (randomWeight < cumulativeWeight) {
+                return item;
+            }
+        }
+    };
 
     createRandomMovingObstacles(gameTime) {
         const getRandomMovingObstacles = (obstacles, obstacleType) => {
             let obstacleY;
             let isValidPosition = false;
-            const maxAttemps = 10;
+            const maxAttemps = 50;
             let attemps = 0;
     
             while (!isValidPosition && attemps < maxAttemps) { //1 bug fix 2days
@@ -359,6 +377,88 @@ class ObstacleHandler {
         }, 2000);
     }
 }
+
+class ObstacleNumberAndAlphabet extends ObstacleHandler {
+    constructor(game, gameCtx) {
+        super(game, gameCtx);   
+    }
+  
+    updateObstacles(gameTime, deltaTime) {
+        this.updatePickRandom();
+        this.updatePosition(this.obstacles, deltaTime);
+
+        this.game.playerInGame.forEach((player) => {
+            this.obstacles.forEach((obstacle, index) => {
+                if (this.checkCollision(player, obstacle)) {
+                    switch (obstacle.type) {
+                        case this.pickRandomArray[0].type:
+                            this.game.scoreOverall++;
+                            this.pickRandomArray.splice(0, 1);
+                            break;
+                        case 'health':
+                            player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 100);
+                            break;
+                        default: 
+                            player.currentHealth -= 50;
+                            shakeScreen(500);
+                            break;
+                    }
+                    this.obstacles.splice(index, 1);
+                }
+
+                if (obstacle.x + this.obstacleWidth < 0) {
+                    this.obstacles.splice(index, 1);
+                }
+            });
+        });
+        // if(gameTime - this.timeUpdateRandom >= 10) {
+        //     this.pickRandomArray.splice(0, 1);
+        //     this.timeUpdateRandom = gameTime;
+        // }
+    }
+
+    drawObstacles() {
+        super.drawObstacles();
+        this.drawPickRandom();
+    }
+
+    updatePickRandom() {
+        if(this.pickRandomArray.length < 1) this.pickRandomArray.push(this.alphabetAndNumber[this.pickRandom()]);
+    }
+
+    drawPickRandom() {
+        if(this.pickRandomArray[0]){
+            this.gameCtx.save();
+            this.gameCtx.drawImage(
+                this.pickRandomArray[0].image, 
+                gameCanvas.width - 80, 20, 
+                this.obstacleWidth, this.obstacleHeight
+            );
+            this.gameCtx.restore();
+        }
+    }
+
+    pickRandom() {
+        return Math.floor(Math.random() * this.alphabetAndNumber.length);
+    }
+    
+    pushObstacle() {
+        this.createRandomObstacleColumn();
+        for (let i = 0; i <= this.obstaclePositions.length; i++) {
+            const randomType = this.getRandomObstacleType(this.alphabetAndNumber);
+            this.obstacles.push({
+                x: gameCanvas.width,
+                y: this.obstaclePositions[i],
+                type: randomType.type,
+                image: randomType.image,
+                direction: - 1,
+                speed: 288
+            });
+        }
+        this.obstaclePositions = [];
+    }
+}
+
 
 class Enemy {
     constructor(game, ctx) {
@@ -646,8 +746,4 @@ class LargeLaser extends Laser {
     }
 }
 
-export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser };
-
-// Tao logic de xuat hien smallLaser va largeLaser 
-// Tai dung vi tri thi moi xuat hien smallLaser va largeLaser
-// Check mau
+export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser, ObstacleNumberAndAlphabet };

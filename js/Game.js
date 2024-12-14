@@ -1,7 +1,7 @@
 import {Player, PlayerMedium} from "./Player.js";   
 import GameConstructor from "./GameConstructor.js";
-import {ObstacleHandler, BOSS, BOSSSMALL} from "./GameObstacles.js";
-import Handgestrue from "./Handgestrue.js";
+import {ObstacleHandler, BOSS, BOSSSMALL, ObstacleNumberAndAlphabet} from "./GameObstacles.js";
+import Handgesture from "./Handgesture.js";
 import { gameScreen } from "./StartAndEnd.js";
 
 const gameCanvas = document.getElementById("gameCanvas");
@@ -10,23 +10,26 @@ const gameCtx = gameCanvas.getContext("2d");
 class Game {
     constructor() {
         //Key 
-        this.handgestrue = new Handgestrue(this);
+        this.handgesture = new Handgesture(this);
         this.hasTouch = false;
         //Src image
+        this.loadImage = false;
         this.gameConstructor = new GameConstructor(this);
         //Player
         this.image = [this.spaceShip1Image, this.spaceShip2Image,this.spaceShip3Image];
         this.players = [];
         this.playerInGame = [...this.players]; 
         //Obstacle
+        this.obstacleNumberAndAlphabet = new ObstacleNumberAndAlphabet(this, gameCtx);
         this.obstacleHandler = new ObstacleHandler(this, gameCtx);
         this.boss = new BOSS(this, gameCtx); 
         this.smallBoss = [];
+        this.letters = [];
         //Game score
         this.scoreOverall = 0;
         this.scorePlayers = [];
         //Start screen
-        this.gameScreen = gameScreen(this, gameCtx, gameCanvas, this.handgestrue);
+        this.gameScreen = gameScreen(this, gameCtx, gameCanvas, this.handgesture);
         //Time
         this.startTime = 0;
         this.currentTime = 0;
@@ -34,18 +37,18 @@ class Game {
         this.isGameOver = false;
         this.pause = false;
     }
-
+    
     udpatePlayerHandgestrue() {
         this.players = [];
         this.players.push(new Player(this, this.spaceShip1Image, gameCtx, 1));
         this.playerInGame = [...this.players];
     }
-
+    
     render(deltaTime = 0) {
         if (!this.isGameStarted && !this.isGameOver) {
             this.pause = false;
             this.gameScreen.drawStartScreen();
-            if(this.handgestrue.isHandClosed()) {
+            if(this.handgesture.isHandClosed()) {
                 this.startTime = performance.now();
                 this.isGameStarted = true;
             }
@@ -93,25 +96,29 @@ class Game {
             player.draw(gap + 80, 30, gap + 15, 60, gap + 15, 90, gap + 10, 10);
             gap += 250;
         });
-        //Obstacle
-        this.obstacleHandler.draw();
-        this.boss.draw(gameTime);
-        this.smallBoss.forEach(smallBoss => {
-            smallBoss.draw(gameTime);
-        });
 
         // Time 
         gameCtx.save();
         gameCtx.fillStyle = "#fff";
         gameCtx.font = "20px Ubuntu";
-        gameCtx.fillText(`Time: `+ gameTime.toFixed(2) + "s", gameCanvas.width - 120, 30);
+        gameCtx.fillText(`Time: `+ gameTime.toFixed(2) + "s", gameCanvas.width - 140, 30);
         gameCtx.restore();
     }
 
     update(gameTime, deltaTime) {
-        //Obstacle
-        this.obstacleHandler.update(deltaTime);
-        
+        if(this.handgesture.isRunning) {
+            if (this.handgesture.isHandClosed() && !this.handgesture.hold && !this.players[0].isFalling) {
+                this.players[0].flap();
+                this.players[0].currentMana -= 5;  
+                this.handgesture.hold = true;
+            } else if (!this.handgesture.isHandClosed()) {
+                this.handgesture.hold = false;
+            }
+    
+            if(this.handgesture.pauseGame()) {
+                this.pause = true;
+            }
+        }
         //Player
         this.playerInGame.forEach(player => {
             player.update(deltaTime);
@@ -146,6 +153,7 @@ class Game {
             player.reset();
         });
         this.hasTouch = false;
+        this.loadImage = false;
     }
 
     getCurrentGameTime() {
@@ -181,16 +189,26 @@ class GameEasy extends Game {
     
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
+        //Obstacle
+        this.obstacleHandler.updateObstacles(gameTime, deltaTime);
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.asteroids, deltaTime, "asteroid");
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.missiles, deltaTime, "missile");
         this.obstacleHandler.framesSinceLastObstacle += deltaTime;
         this.obstacleHandler.createRandomMovingObstacles(gameTime);
         if( this.obstacleHandler.framesSinceLastObstacle >=  1.5) {
-            this.obstacleHandler.createRandomObstacleColumn(gameTime);
+            this.obstacleHandler.pushObstacle(gameTime);
             this.obstacleHandler.framesSinceLastObstacle = 0;
         }
     }
+
+    draw(gameTime) {
+        super.draw(gameTime);
+        this.obstacleHandler.drawObstacles();
+        this.obstacleHandler.drawMovingObstacles();
+    }
 }
 
-class GameMedium extends Game {
+class GameChild extends Game {
     constructor() {
         super();
     }
@@ -204,16 +222,87 @@ class GameMedium extends Game {
         }
         this.playerInGame = [...this.players];
     }
+
+    update(gameTime, deltaTime) {
+        super.update(gameTime, deltaTime);
+        this.obstacleNumberAndAlphabet.updateObstacles(gameTime, deltaTime);
+        this.obstacleNumberAndAlphabet.framesSinceLastObstacle += deltaTime;
+        // this.obstacleNumberAndAlphabet.createRandomMovingObstacles(gameTime);
+        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.5) {
+            this.obstacleNumberAndAlphabet.pushObstacle(gameTime);
+            this.obstacleNumberAndAlphabet.framesSinceLastObstacle = 0;
+        }
+    }
+
+    draw(gameTime) {
+        super.draw(gameTime);
+        this.obstacleNumberAndAlphabet.drawObstacles();
+    }
+}
+
+class GameMedium extends Game {
+    constructor() {
+        super();
+    }
+
+    updatePlayers(players) {
+        this.players = []; //1 line bug 2 hours
+        for (let i = 0; i < players; i++) {
+            let player;
+            player = new PlayerMedium(this, this.image[i], gameCtx, i + 1);
+            this.players.push(player);
+        }
+        this.playerInGame = [...this.players];
+    }
     
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
+        //Obstacle
+        this.obstacleHandler.updateObstacles(gameTime, deltaTime);
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.asteroids, deltaTime, "asteroid");
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.missiles, deltaTime, "missile");
+        this.obstacleHandler.framesSinceLastObstacle += deltaTime;
+        this.obstacleHandler.createRandomMovingObstacles(gameTime);
+        if( this.obstacleHandler.framesSinceLastObstacle >= 1) {
+            this.obstacleHandler.pushObstacle(gameTime);
+            this.obstacleHandler.framesSinceLastObstacle = 0;
+        }
+    }
 
+    draw(gameTime) {
+        super.draw(gameTime);
+        this.obstacleHandler.drawObstacles();
+        this.obstacleHandler.drawMovingObstacles();
+    }
+}
 
+class GameHard extends Game {
+    constructor() {
+        super();
+    }
+
+    updatePlayers(players) {
+        this.players = []; //1 line bug 2 hours
+        for (let i = 0; i < players; i++) {
+            let player;
+            player = new PlayerMedium(this, this.image[i], gameCtx, i + 1);
+            this.players.push(player);
+        }
+        this.playerInGame = [...this.players];
+    }
+
+    update(gameTime, deltaTime) {
+        console.log(this.boss.x)
+        super.update(gameTime, deltaTime);
+        //Obstacle
+        this.obstacleHandler.updateObstacles(gameTime, deltaTime);
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.asteroids, deltaTime, "asteroid");
+        this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.missiles, deltaTime, "missile");
         if(gameTime % 60 < 30) {
             this.obstacleHandler.framesSinceLastObstacle += deltaTime;
             this.obstacleHandler.createRandomMovingObstacles(gameTime);
-            if( this.obstacleHandler.framesSinceLastObstacle >=  this.obstacleHandler.obstaclesInterval) {
-                this.obstacleHandler.createRandomObstacleColumn(gameTime);
+            if(this.obstacleHandler.framesSinceLastObstacle >=  this.obstacleHandler.obstaclesInterval) {
+                this.obstacleHandler.pushObstacle(gameTime);
                 this.obstacleHandler.framesSinceLastObstacle = 0;
             }
         }
@@ -235,43 +324,17 @@ class GameMedium extends Game {
             this.boss.reset();
         }
     }
-}
 
-class GameHard extends GameMedium {
-    constructor() {
-        super();
-    }
-
-    updatePlayers(players) {
-        this.players = []; //1 line bug 2 hours
-        for (let i = 0; i < players; i++) {
-            let player;
-            player = new PlayerMedium(this, this.image[i], gameCtx, i + 1);
-            this.players.push(player);
-        }
-        this.playerInGame = [...this.players];
+    draw(gameTime) {
+        super.draw(gameTime);
+        this.obstacleHandler.drawObstacles();
+        this.obstacleHandler.drawMovingObstacles();
+        this.boss.draw(gameTime);
+        this.smallBoss.forEach((smallBoss) => {
+            smallBoss.draw(gameTime);
+            console.log("1")
+        });
     }
 }
 
-class GameHandGesture extends GameEasy {
-    constructor() {
-        super();
-    }
-
-    update(gameTime, deltaTime) {
-        super.update(gameTime, deltaTime);
-        if (this.handgestrue.isHandClosed() && !this.handgestrue.hold && !this.players[0].isFalling) {
-            this.players[0].flap();
-            this.players[0].currentMana -= 5;  
-            this.handgestrue.hold = true;
-        } else if (!this.handgestrue.isHandClosed()) {
-            this.handgestrue.hold = false;
-        }
-
-        if(this.handgestrue.pauseGame()) {
-            this.pause = true;
-        }
-    }
-}
-
-export {GameHard, GameMedium, GameEasy, GameHandGesture};
+export {GameHard, GameMedium, GameEasy, GameChild};
