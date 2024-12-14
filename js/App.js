@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 import { GameHard ,GameMedium, GameEasy, GameChild } from './Game.js';
-=======
-import { GameHard ,GameMedium, GameEasy, GameHandGesture } from './Game.js';
->>>>>>> 15aeb4478a81758739ed658162c3b2872da78850
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
