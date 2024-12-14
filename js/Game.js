@@ -38,12 +38,6 @@ class Game {
         this.pause = false;
     }
     
-    udpatePlayerHandgestrue() {
-        this.players = [];
-        this.players.push(new Player(this, this.spaceShip1Image, gameCtx, 1));
-        this.playerInGame = [...this.players];
-    }
-    
     render(deltaTime = 0) {
         if (!this.isGameStarted && !this.isGameOver) {
             this.pause = false;
@@ -178,6 +172,12 @@ class GameEasy extends Game {
         super();
     }
 
+    udpatePlayerHandgestrue() {
+        this.players = [];
+        this.players.push(new Player(this, this.spaceShip1Image, gameCtx, 1));
+        this.playerInGame = [...this.players];
+    }
+
     updatePlayers(players) {
         this.players = []; //1 line bug 2 hours
         for (let i = 0; i < players; i++) {
@@ -246,6 +246,12 @@ class GameMedium extends Game {
         super();
     }
 
+    udpatePlayerHandgestrue() {
+        this.players = [];
+        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
+        this.playerInGame = [...this.players];
+    }
+
     updatePlayers(players) {
         this.players = []; //1 line bug 2 hours
         for (let i = 0; i < players; i++) {
@@ -280,6 +286,12 @@ class GameMedium extends Game {
 class GameHard extends Game {
     constructor() {
         super();
+    }
+
+    udpatePlayerHandgestrue() {
+        this.players = [];
+        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
+        this.playerInGame = [...this.players];
     }
 
     updatePlayers(players) {
