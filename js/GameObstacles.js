@@ -17,7 +17,9 @@ class ObstacleHandler {
         this.obstacleGap = 150;
         this.framesSinceLastObstacle = 0;
         this.obstacleCount = 4;
+
         this.timeUpdateRandom = 0;
+        this.weightRandom = 1;
 
         this.asteroids = [];
         this.lastAsteroidTime = 0;
@@ -41,36 +43,44 @@ class ObstacleHandler {
             { type: 'power', image: this.game.powerImage, weight: 10 },
         ];
 
-        this.alphabetAndNumber = [    
-            {type: "A", image: this.game.letterA, weight: 1},
-            {type: "B", image: this.game.letterB, weight: 1},
-            {type: "C", image: this.game.letterC, weight: 1},
-            {type: "D", image: this.game.letterD, weight: 1},
-            {type: "E", image: this.game.letterE, weight: 1},
-            {type: "F", image: this.game.letterF, weight: 1},
-            {type: "G", image: this.game.letterG, weight: 1},
-            {type: "H", image: this.game.letterH, weight: 1},
-            {type: "I", image: this.game.letterI, weight: 1},
-            {type: "J", image: this.game.letterJ, weight: 1},
-            {type: "K", image: this.game.letterK, weight: 1},
-            {type: "L", image: this.game.letterL, weight: 1},
-            {type: "M", image: this.game.letterM, weight: 1},
-            {type: "N", image: this.game.letterN, weight: 1},
-            {type: "O", image: this.game.letterO, weight: 1},
-            {type: "P", image: this.game.letterP, weight: 1},
-            {type: "Q", image: this.game.letterQ, weight: 1},
-            {type: "R", image: this.game.letterR, weight: 1},
-            {type: "S", image: this.game.letterS, weight: 1},
-            {type: "T", image: this.game.letterT, weight: 1},
-            {type: "U", image: this.game.letterU, weight: 1},
-            {type: "V", image: this.game.letterV, weight: 1},
-            {type: "W", image: this.game.letterW, weight: 1},
-            {type: "X", image: this.game.letterX, weight: 1},
-            {type: "Y", image: this.game.letterY, weight: 1},
-            {type: "Z", image: this.game.letterZ, weight: 1},
-            { type: 'health', image: this.game.healthImage, weight: 3 },
-
-        ]; 
+        this.alphabetAndNumber = [
+            {type: "A", image: this.game.letterA, weight: this.weightRandom},
+            {type: "B", image: this.game.letterB, weight: this.weightRandom},
+            {type: "C", image: this.game.letterC, weight: this.weightRandom},
+            {type: "D", image: this.game.letterD, weight: this.weightRandom},
+            {type: "E", image: this.game.letterE, weight: this.weightRandom},
+            {type: "F", image: this.game.letterF, weight: this.weightRandom},
+            {type: "G", image: this.game.letterG, weight: this.weightRandom},
+            {type: "H", image: this.game.letterH, weight: this.weightRandom},
+            {type: "I", image: this.game.letterI, weight: this.weightRandom},
+            {type: "J", image: this.game.letterJ, weight: this.weightRandom},
+            {type: "K", image: this.game.letterK, weight: this.weightRandom},
+            {type: "L", image: this.game.letterL, weight: this.weightRandom},
+            {type: "M", image: this.game.letterM, weight: this.weightRandom},
+            {type: "N", image: this.game.letterN, weight: this.weightRandom},
+            {type: "O", image: this.game.letterO, weight: this.weightRandom},
+            {type: "P", image: this.game.letterP, weight: this.weightRandom},
+            {type: "Q", image: this.game.letterQ, weight: this.weightRandom},
+            {type: "R", image: this.game.letterR, weight: this.weightRandom},
+            {type: "S", image: this.game.letterS, weight: this.weightRandom},
+            {type: "T", image: this.game.letterT, weight: this.weightRandom},
+            {type: "U", image: this.game.letterU, weight: this.weightRandom},
+            {type: "V", image: this.game.letterV, weight: this.weightRandom},
+            {type: "W", image: this.game.letterW, weight: this.weightRandom},
+            {type: "X", image: this.game.letterX, weight: this.weightRandom},
+            {type: "Y", image: this.game.letterY, weight: this.weightRandom},
+            {type: "Z", image: this.game.letterZ, weight: this.weightRandom},
+            {type: "0", image: this.game.number0, weight: this.weightRandom},
+            {type: "1", image: this.game.number1, weight: this.weightRandom},
+            {type: "2", image: this.game.number2, weight: this.weightRandom},
+            {type: "3", image: this.game.number3, weight: this.weightRandom},
+            {type: "4", image: this.game.number4, weight: this.weightRandom},
+            {type: "5", image: this.game.number5, weight: this.weightRandom},
+            {type: "6", image: this.game.number6, weight: this.weightRandom},
+            {type: "7", image: this.game.number7, weight: this.weightRandom},
+            {type: "8", image: this.game.number8, weight: this.weightRandom},
+            {type: "9", image: this.game.number9, weight: this.weightRandom},];
+            // {type: 'health', image: this.game.healthImage, weight: 3},
         this.pickRandomArray = [];
     }
 
@@ -441,18 +451,20 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
     pickRandom() {
         return Math.floor(Math.random() * this.alphabetAndNumber.length);
     }
-    
+  
     pushObstacle() {
         this.createRandomObstacleColumn();
         for (let i = 0; i <= this.obstaclePositions.length; i++) {
             const randomType = this.getRandomObstacleType(this.alphabetAndNumber);
+            const weight = (randomType.type === this.pickRandomArray[0]?.type) ? 5 : randomType.weight;
             this.obstacles.push({
                 x: gameCanvas.width,
                 y: this.obstaclePositions[i],
                 type: randomType.type,
                 image: randomType.image,
-                direction: - 1,
-                speed: 288
+                direction: -1,
+                speed: 288,
+                weight: weight
             });
         }
         this.obstaclePositions = [];

@@ -145,6 +145,7 @@ class Game {
         this.scorePlayers = [];
         this.shieldActive = false;
         this.obstacleHandler.reset();
+        this.obstacleNumberAndAlphabet.reset();
         this.boss.reset();
         this.smallBoss.forEach(smallBoss => {
             smallBoss.reset();
@@ -332,9 +333,8 @@ class GameHard extends Game {
         this.boss.draw(gameTime);
         this.smallBoss.forEach((smallBoss) => {
             smallBoss.draw(gameTime);
-            console.log("1")
         });
     }
 }
 
-export {GameHard, GameMedium, GameEasy, GameChild};
+export {GameHard, GameMedium, GameEasy, GameChild, Game};

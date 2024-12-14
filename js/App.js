@@ -1,5 +1,5 @@
 
-import { GameHard ,GameMedium, GameEasy, GameChild } from './Game.js';
+import { GameHard ,GameMedium, GameEasy, GameChild, Game } from './Game.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -13,10 +13,11 @@ window.addEventListener('load', function () {
     //     console.log(`Số lượt chơi: ${playCount}`);
     // }
     const levelGame = [new GameChild(), new GameEasy(), new GameMedium(), new GameHard()];
-    let game = null;
-    
+    let game = new Game();
+
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
+
     const startGame = document.querySelector(".btn-start-game");
     const header = document.querySelector(".header");
     const tutorial = document.querySelector(".tutorial");
@@ -148,7 +149,7 @@ window.addEventListener('load', function () {
             game.hasTouch = true;
             game.startTime = performance.now();
             game.isGameStarted = true;
-            game.render(); 
+            game.render();
         }
     };
     
@@ -156,17 +157,13 @@ window.addEventListener('load', function () {
         if(game.players[0].currentHealth > 0) game.players[0].flap();
     });
 
-
     let lastTime = 0;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     function animate(timeStamp) {  
         const deltaTime = (timeStamp - lastTime) / 1000;    
         lastTime = timeStamp;
-        if(game !== null) {
-            game.render(deltaTime);
-        }
+        game.render(deltaTime);
         requestAnimationFrame(animate);
     }
     animate(0);
-    
 });

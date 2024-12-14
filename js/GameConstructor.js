@@ -20,22 +20,7 @@ class GameConstructor {
         
         this.game.ufoComeImage = new Image();
         this.game.ufoComeImage.src = './assets/img/ufo-come.png';
-        
-        this.game.ufochild1Image = new Image();
-        this.game.ufochild1Image.src = './assets/img/ufo-child-1.png';
-        
-        this.game.ufochild2Image = new Image();
-        this.game.ufochild2Image.src = './assets/img/ufo-child-2.png';
 
-        this.game.ufochild3Image = new Image();
-        this.game.ufochild3Image.src = './assets/img/ufo-child-3.png';
-
-        this.game.fireballImage = new Image();
-        this.game.fireballImage.src = './assets/img/fireball.png';
-        
-        this.game.iceballImage = new Image();
-        this.game.iceballImage.src = './assets/img/iceball.png';
-        
         this.game.asteroidImage = new Image();
         this.game.asteroidImage.src = './assets/img/asteroid.png';
         
@@ -156,7 +141,86 @@ class GameConstructor {
         this.game.letterZ = new Image();
         this.game.letterZ.src = "./assets/img/Z.png"
 
+        this.game.number0 = new Image();
+        this.game.number0.src = "./assets/img/number-0.png"
 
+        this.game.number1 = new Image();
+        this.game.number1.src = "./assets/img/number-1.png"
+
+        this.game.number2 = new Image();
+        this.game.number2.src = "./assets/img/number-2.png"
+
+        this.game.number3 = new Image();
+        this.game.number3.src = "./assets/img/number-3.png"
+
+        this.game.number4 = new Image();
+        this.game.number4.src = "./assets/img/number-4.png"
+
+        this.game.number5 = new Image();
+        this.game.number5.src = "./assets/img/number-5.png"
+
+        this.game.number6 = new Image();
+        this.game.number6.src = "./assets/img/number-6.png"
+
+        this.game.number7 = new Image();
+        this.game.number7.src = "./assets/img/number-7.png"
+
+        this.game.number8 = new Image();
+        this.game.number8.src = "./assets/img/number-8.png"
+
+        this.game.number9 = new Image();
+        this.game.number9.src = "./assets/img/number-9.png"
+
+
+
+        // this.game.images = [
+        //     this.game.spaceShip1Image,
+        //     this.game.spaceShip2Image,
+        //     this.game.spaceShip3Image,
+        //     this.game.spaceBackground,
+        //     this.game.ufoBossImage,
+        //     this.game.ufoComeImage,
+        //     this.game.asteroidImage,
+        //     this.game.missileImage,
+        //     this.game.blackHoleImage,
+        //     this.game.cosmicDustImage,
+        //     this.game.neptuneImage,
+        //     this.game.uranusImage,
+        //     this.game.saturnImage,
+        //     this.game.marsImage,
+        //     this.game.mercuryImage,
+        //     this.game.jupiterImage,
+        //     this.game.venusImage,
+        //     this.game.healthImage,
+        //     this.game.shieldImage,
+        //     this.game.powerImage,
+        //     this.game.letterA,
+        //     this.game.letterB,
+        //     this.game.letterC,
+        //     this.game.letterD,
+        //     this.game.letterE,
+        //     this.game.letterF,
+        //     this.game.letterG,
+        //     this.game.letterH,
+        //     this.game.letterI,
+        //     this.game.letterJ,
+        //     this.game.letterK,
+        //     this.game.letterL,
+        //     this.game.letterM,
+        //     this.game.letterN,
+        //     this.game.letterO,
+        //     this.game.letterP,
+        //     this.game.letterQ,
+        //     this.game.letterR,
+        //     this.game.letterS,
+        //     this.game.letterT,
+        //     this.game.letterU,
+        //     this.game.letterV,
+        //     this.game.letterW,
+        //     this.game.letterX,
+        //     this.game.letterY,
+        //     this.game.letterZ,
+        // ];
         // rgba(136, 216, 252, 1) #88D8FC
         // rgba(140, 212, 252, 1) #8CD4FC
         // rgba(186, 168, 250, 1) #BAA8FA
@@ -165,17 +229,6 @@ class GameConstructor {
 
         this.game.LoadImage = false;
     }
-
-    // load() {
-    //     if (!this.game.LoadImage)  {
-    //         for(let i = 65; i <= 90; i++) {
-    //             let letter = new Image();
-    //             letter.src = `./assets/img/letters/${String.fromCharCode(i)}.png`;
-    //             this.game.letters.push(letter);
-    //         }
-    //         this.game.LoadImage = true;
-    //     }
-    // }
 }
 
 export default GameConstructor;
