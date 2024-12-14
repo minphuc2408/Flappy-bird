@@ -1,5 +1,5 @@
 
-import { GameHard ,GameMedium, GameEasy, GameChild } from './Game1.js';
+import { GameHard ,GameMedium, GameEasy, GameChild } from './Game.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
