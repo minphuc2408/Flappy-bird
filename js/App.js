@@ -1,5 +1,5 @@
 
-import { GameHard ,GameMedium, GameEasy, GameChild } from './Game.js';
+import { GameHard ,GameMedium, GameEasy, GameChild } from './Game1.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -28,6 +28,7 @@ window.addEventListener('load', function () {
     const firstList = document.querySelector('.first');
     const secondList = document.querySelector('.second');
     const thirdList = document.querySelector('.third');
+    const fourthList = document.querySelector('.fourth');
 
     const handgesture = document.getElementById("handgesture");
     const keyboard = document.getElementById("keyboard");
@@ -73,7 +74,7 @@ window.addEventListener('load', function () {
         }
     });
 
-    const arrayList = [firstList, secondList, thirdList];
+    const arrayList = [firstList, secondList, thirdList, fourthList];
     let currentIndex = 0;
     btnNext.onclick = () => {
         if(currentIndex < arrayList.length - 1) {
