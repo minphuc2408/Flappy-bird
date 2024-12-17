@@ -5,13 +5,6 @@ const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
 window.addEventListener('load', function () {
-    // let playCount = parseInt(localStorage.getItem('playCount')) || 0;
-
-    // function startGame() {
-    //     playCount++;
-    //     localStorage.setItem('playCount', playCount);
-    //     console.log(`Số lượt chơi: ${playCount}`);
-    // }
     const levelGame = [new GameChild(), new GameEasy(), new GameMedium(), new GameHard()];
     let game = new Game();
 
@@ -121,9 +114,9 @@ window.addEventListener('load', function () {
                     player.currentMana -= 5;
                     player.pressed = true;
                 }
-                // if(e.code === keyshoot) {
-                //     player.checkShoot = true;
-                // }
+                if(e.code === keyshoot) {
+                    player.checkShoot = true;
+                }
 
                 // console.log(e.code);
             }

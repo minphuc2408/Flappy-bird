@@ -9,7 +9,7 @@ class Handgesture {
         this.handCanvas = handCanvas;
         this.hold = false;
         this.isRunning = false;
-        this.landmarks = null;
+        this.landmarks = [];
 
         this.hands = new Hands({
             locateFile: (file) => {
@@ -48,7 +48,7 @@ class Handgesture {
     }
 
     async stop() {
-        this.landmarks = null; // 1 bug 3 hours (Loi 1P tat gameover dot ngot)
+        this.landmarks = []; // 1 bug 3 hours (Loi 1P tat gameover dot ngot)
         if (!this.isRunning) {
             return;
         }
@@ -61,64 +61,71 @@ class Handgesture {
     }
 
     numberOne() {
-        if(!this.landmarks) return false;
+        if (this.landmarks.length === 0) return false;
 
         const tipIds = [12, 16, 20];
         const baseIds = [9, 13, 17];
 
         let closedFingers = 0;
 
-        for (let i = 0; i < tipIds.length; i++) {
-            const tip = this.landmarks[tipIds[i]];
-            const base = this.landmarks[baseIds[i]];
+        for (const landmarks of this.landmarks) {
+            for (let i = 0; i < tipIds.length; i++) {
+                const tip = landmarks[tipIds[i]];
+                const base = landmarks[baseIds[i]];
 
-            if (tip.y > base.y) {
-                closedFingers++;
+                if (tip.y > base.y) {
+                    closedFingers++;
+                }
             }
         }
 
-        return closedFingers >= 3 && this.landmarks[8].y < this.landmarks[5].y;
+        return closedFingers >= 3 && this.landmarks.every(landmarks => landmarks[8].y < landmarks[5].y);
     }
-    
+
     numberTwo() {
-        if(!this.landmarks) return false;
+        if (this.landmarks.length === 0) return false;
+
         const tipIds = [16, 20];
         const baseIds = [13, 17];
         let closedFingers = 0;
 
-        for (let i = 0; i < tipIds.length; i++) {
-            const tip = this.landmarks[tipIds[i]];
-            const base = this.landmarks[baseIds[i]];
+        for (const landmarks of this.landmarks) {
+            for (let i = 0; i < tipIds.length; i++) {
+                const tip = landmarks[tipIds[i]];
+                const base = landmarks[baseIds[i]];
 
-            if (tip.y > base.y) {
-                closedFingers++;
+                if (tip.y > base.y) {
+                    closedFingers++;
+                }
             }
         }
 
-        return closedFingers >= 2 
-        && this.landmarks[8].y < this.landmarks[5].y 
-        && this.landmarks[12].y < this.landmarks[9].y;
+        return closedFingers >= 2 &&
+            this.landmarks.every(landmarks => landmarks[8].y < landmarks[5].y) &&
+            this.landmarks.every(landmarks => landmarks[12].y < landmarks[9].y);
     }
 
     pauseGame() {
-        if(!this.landmarks) return false;   
-        return this.landmarks[0].y >= 1;
+        if (this.landmarks.length === 0) return false;
+        return this.landmarks.every(landmarks => landmarks[0].y >= 1);
     }
 
     isHandClosed() {
-        if (!this.landmarks) return false;
+        if (this.landmarks.length === 0) return false;
 
         const tipIds = [8, 12, 16, 20];
-        const baseIds = [5, 9, 13, 17];
+        const baseIds = [6, 10, 14, 18];
 
         let closedFingers = 0;
 
-        for (let i = 0; i < tipIds.length; i++) {
-            const tip = this.landmarks[tipIds[i]];
-            const base = this.landmarks[baseIds[i]];
+        for (const landmarks of this.landmarks) {
+            for (let i = 0; i < tipIds.length; i++) {
+                const tip = landmarks[tipIds[i]];
+                const base = landmarks[baseIds[i]];
 
-            if (tip.y > base.y) {
-                closedFingers++;
+                if (tip.y > base.y) {
+                    closedFingers++;
+                }
             }
         }
 
@@ -133,6 +140,8 @@ class Handgesture {
 
     drawHandLandmarks(results) {
         this.handCtx.save();
+        this.handCtx.translate(this.handCanvas.width, 0);
+        this.handCtx.scale(-1, 1);
         this.handCtx.drawImage(results.image, 0, 0, this.handCanvas.width, this.handCanvas.height);
 
         if (results.multiHandLandmarks) {
@@ -146,11 +155,9 @@ class Handgesture {
 
     handleHandGestures(results) {
         if (results.multiHandLandmarks) {
-            for (const landmarks of results.multiHandLandmarks) {
-                this.landmarks = landmarks;
-            }
+            this.landmarks = results.multiHandLandmarks;
         } else {
-            this.landmarks = null;
+            this.landmarks = [];
         }
     }
 

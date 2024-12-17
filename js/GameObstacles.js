@@ -101,6 +101,12 @@ class ObstacleHandler {
         player.y + player.height > obstacle.y && player.y < obstacle.y + this.obstacleHeight;
     }
 
+    checkLaser(player, obstacle) {
+        return player.x + player.width > obstacle.x && player.x < obstacle.x + this.obstacleWidth &&
+        player.y + player.height > obstacle.y && player.y < obstacle.y + this.obstacleHeight;
+
+    }
+
     updatePosition(obstacles, deltaTime) {
         obstacles.forEach((obstacle) => {
             obstacle.x += obstacle.speed * obstacle.direction * deltaTime;
@@ -115,8 +121,10 @@ class ObstacleHandler {
                 if (this.checkCollision(player, obstacle)) {
                     this.handleCollision(player, obstacle);
                     this.obstacles.splice(index, 1);
+                } else if (this.checkLaser(player.largeLaser, obstacle) && player.checkShoot) {
+                    this.obstacles.splice(index, 1);
                 }
-    
+                
                 if (obstacle.isColumn && obstacle.x + this.obstacleWidth < player.x && !obstacle.passed) {
                    this.game.scoreOverall++;
                     obstacle.passed = true;
@@ -147,9 +155,7 @@ class ObstacleHandler {
             case 'mercury':
             case 'jupiter':
             case 'venus':
-            case 'ufo':
-            case 'ufochild1':
-            case 'ufochild2':
+            case 'blackhole':
                 player.shieldActive = false;
                 break;
             case 'health':
@@ -396,6 +402,7 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
     updateObstacles(gameTime, deltaTime) {
         this.updatePickRandom();
         this.updatePosition(this.obstacles, deltaTime);
+        this.increase();
 
         this.game.playerInGame.forEach((player) => {
             this.obstacles.forEach((obstacle, index) => {
@@ -425,6 +432,16 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
         //     this.pickRandomArray.splice(0, 1);
         //     this.timeUpdateRandom = gameTime;
         // }
+    }
+
+    increase() {
+        this.alphabetAndNumber.forEach((letterOrNumber, index) => {
+            if(letterOrNumber.type == this.pickRandomArray[0].type) {
+                letterOrNumber.weight = 7;
+            } else {
+                letterOrNumber.weight = 1;
+            }
+        });
     }
 
     drawObstacles() {
@@ -471,7 +488,6 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
     }
 }
 
-
 class Enemy {
     constructor(game, ctx) {
         this.game = game;
@@ -483,11 +499,22 @@ class Enemy {
         this.speed = 36;
         this.isTimeActive = false;
         this.largeLaser = new LargeLaser(this, this.gameCtx);
+        this.maxHealth;
+        this.currentHealth = this.maxHealth;
+        this.displayHealth = this.maxHealth;
     }
 
     isColliding(player, type) {
         return player.x + player.width > type.x && player.x < type.x + type.width &&
         player.y + player.height > type.y && player.y < type.y + type.height;
+    }
+
+    checkCollisionLargeLaserOfPlayer() {
+        this.game.playerInGame.forEach((player, index) => {
+            if(this.isColliding(player.largeLaser, this) && player.checkShoot) {
+                this.currentHealth -= 100;
+            }
+        });
     }
 
     updatePositionLargeLaser() {
@@ -504,9 +531,7 @@ class Enemy {
         if (this.y < 0) {
             this.y = 0;
         }
-        if (this.y + this.height > gameCanvas.height) {
-            this.y = gameCanvas.height - this.height;
-        }
+
         if(!this.isTimeActive && this.x < gameCanvas.width) {
             this.x += this.speed * deltaTime;
         }
@@ -523,18 +548,21 @@ class BOSS extends Enemy {
         this.timeShoot = 0;
         this.lasers = [];
         this.currentTime = 0;
-        this.smallLaserInterval = 0.6;
-    }
+        this.smallLaserInterval = 1.2;
+        this.maxLasers = 5;
 
-    createSmallLaser() {
-        const laser = new SmallLaser(this, this.gameCtx, this.x, this.y + this.height / 2);
-        this.lasers.push(laser);
+        this.maxHealth = 20000;
+        this.currentHealth = this.maxHealth;
+        this.displayHealth = this.maxHealth;
     }
 
     createLasers(gameTime) {
-        if(gameTime - this.currentTime >= this.smallLaserInterval) {
-            this.createSmallLaser(gameTime);
+        if (gameTime - this.currentTime >= this.smallLaserInterval) {
             this.currentTime = gameTime;
+            for(let i = 1; i <= this.maxLasers; i++) {
+                const laser = new SmallLaser(this.game, this.gameCtx, this.x, this.y + this.height / 2, 0); 
+                this.lasers.push(laser);
+            }
         }
     }
 
@@ -545,7 +573,6 @@ class BOSS extends Enemy {
                 this.lasers.splice(index, 1);
             }
         });
-
     }
 
     updatePositionLargeLaser() {
@@ -558,7 +585,7 @@ class BOSS extends Enemy {
     }
 
     timeSmallLaserActive(gameTime) {     
-        return (gameTime % TIMEINTERVAL > 35 && gameTime % TIMEINTERVAL < 45) || (gameTime % TIMEINTERVAL > 50 && gameTime % TIMEINTERVAL < 57);    
+        return (gameTime % TIMEINTERVAL > 35 && gameTime % TIMEINTERVAL < 42) || (gameTime % TIMEINTERVAL > 50 && gameTime % TIMEINTERVAL < 57);    
     }
 
     checkCollisionSmallLaser() {
@@ -592,6 +619,17 @@ class BOSS extends Enemy {
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
 
+        if(this.displayHealth > this.currentHealth) {
+            this.displayHealth -= 50;
+        } else {
+            this.displayHealth = this.currentHealth;
+        }
+
+        if(this.currentHealth <= 0) {
+            this.y += 200 * deltaTime;
+            return;
+        }
+        
         const positionActive = this.x <= gameCanvas.width * (4 / 6);
         if(this.isTimeActive && !positionActive) {
             this.x -= this.speed * deltaTime;
@@ -602,8 +640,11 @@ class BOSS extends Enemy {
             if (Math.abs(this.y - this.targetY) <= 1) {
                 this.targetY = Math.random() * (gameCanvas.height - this.height);
             }
-            this.direction = this.targetY < this.y ? -1 : 1;               
+            this.direction = this.targetY < this.y ? -1 : 1;              
             this.y += this.direction * this.speed * deltaTime;
+            if (this.y + this.height > gameCanvas.height) {
+                this.y = gameCanvas.height - this.height;
+            } 
 
             if(this.timeLargeLaserActive(gameTime)) {
                 this.updatePositionLargeLaser();
@@ -612,10 +653,11 @@ class BOSS extends Enemy {
             }
             if(this.timeSmallLaserActive(gameTime)) {
                 this.createLasers(gameTime);
-                this.checkCollisionSmallLaser();
             }
+            this.checkCollisionLargeLaserOfPlayer();
         }
         this.updateSmallLaser(deltaTime);
+        this.checkCollisionSmallLaser();
     }
 
     draw(gameTime) {
@@ -623,13 +665,21 @@ class BOSS extends Enemy {
             this.largeLaser.draw("gold", "#fff");
         }
 
-        if(this.timeSmallLaserActive(gameTime)) {
-            this.lasers.forEach((laser) => {
-                laser.draw( "#ff1818", "#fff");
-            });
-        }
+        this.lasers.forEach((laser) => {
+            laser.draw( "#ff1818", "#fff");
+        });
         this.gameCtx.save();
         this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        this.gameCtx.restore();
+    }
+
+    drawHealth(healthX, healthY) {
+        this.gameCtx.save();
+        this.gameCtx.translate(gameCanvas.width, 0); 
+        this.gameCtx.scale(-1, 1);
+        this.gameCtx.drawImage(this.image, healthX - 30, healthY, 26, 26);
+        this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
+        this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
         this.gameCtx.restore();
     }
 
@@ -643,12 +693,42 @@ class BOSS extends Enemy {
     }
 }
 
+class BOSSHARD extends BOSS {
+    constructor(game, ctx) {
+        super(game, ctx);
+    }
+
+    createLasers(gameTime) {
+        if (gameTime - this.currentTime >= this.smallLaserInterval) {
+            let angle = -30;
+            this.currentTime = gameTime;
+            for(let i = 1; i <= this.maxLasers; i++) {
+                const laser = new SmallLaser(this.game, this.gameCtx, this.x, this.y + this.height / 2, (Math.PI * angle) / 180); // 0 degrees
+                this.lasers.push(laser);
+                angle += 15;
+            }
+        }
+    }
+
+    draw(gameTime, healthX, healthY) {
+        super.draw(gameTime);
+        if(this.isTimeActive) {
+            this.drawHealth(healthX, healthY);
+        }
+    }
+}
+
+
 class BOSSSMALL extends Enemy {
     constructor(game, ctx, y) {
         super(game, ctx);
         this.image = this.game.ufoComeImage;
         this.speed = 90;
         this.y = y;
+
+        this.maxHealth = 5000;
+        this.currentHealth = this.maxHealth;
+        this.displayHealth = this.maxHealth;
     }
 
     timeLargeLaserActive(gameTime) {
@@ -666,18 +746,33 @@ class BOSSSMALL extends Enemy {
             }
         });
     }
-
+    
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
-        const positionActive = this.x >= gameCanvas.width * (5 / 6);
-        if(this.isTimeActive && positionActive) {
+        
+        if(this.displayHealth > this.currentHealth) {
+            this.displayHealth -= 50;
+        } else {
+            this.displayHealth = this.currentHealth;
+        }
+        
+        if(this.currentHealth <= 0) {
+            this.y += 200 * deltaTime;
+            return;
+        }
+
+        const positionActive = this.x <= gameCanvas.width * (5 / 6);
+        if(this.isTimeActive && !positionActive) {
             this.x -= this.speed * deltaTime;
             return;
         }
 
-        if(this.timeLargeLaserActive(gameTime)) {
-            this.updatePositionLargeLaser();   
-            this.checkCollision();    
+        if(positionActive) {
+            if(this.timeLargeLaserActive(gameTime)) {
+                this.updatePositionLargeLaser();   
+                this.checkCollision();    
+            }
+            this.checkCollisionLargeLaserOfPlayer();
         }
     }
 
@@ -691,8 +786,31 @@ class BOSSSMALL extends Enemy {
         this.gameCtx.restore();
     }
 
+    drawHealth(healthX, healthY, y) {
+        this.gameCtx.save();
+        this.gameCtx.translate(gameCanvas.width, 0); 
+        this.gameCtx.scale(-1, 1);
+        this.gameCtx.drawImage(this.image, healthX - 30, healthY, 20, 20);
+        this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
+        this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 140, 0), y);
+        this.gameCtx.restore();
+    }
+
     reset() {
         this.x = gameCanvas.width;
+    }
+}
+
+class BOSSSMALLHARD extends BOSSSMALL {
+    constructor(game, ctx, y) {
+        super(game, ctx);
+    }
+
+    draw(gameTime, healthX, healthY, y) {
+        super.draw(gameTime);
+        if(this.isTimeActive) {
+            this.drawHealth(healthX, healthY, y);
+        }
     }
 }
 
@@ -706,29 +824,40 @@ class Laser {
         this.x =  gameCanvas.width;
         this.y;
     }
-
-    update(deltaTime) {
-        this.x -= this.speed * deltaTime;
-    }
 }
 
 class SmallLaser extends Laser {
-    constructor(game, ctx, x, y) {
+    constructor(game, ctx, x, y, angle) {
         super(game, ctx);
         this.x = x;
         this.y = y;
         this.width = 75;
         this.height = 14;
+        this.angle = angle; 
+    }
+
+    update(deltaTime) {
+        this.x -= Math.cos(this.angle) * this.speed * deltaTime;
+        this.y -= Math.sin(this.angle) * this.speed * deltaTime;
     }
 
     draw(BorderColor, MainColor) {
         this.gameCtx.save();
+
+        this.gameCtx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        this.gameCtx.rotate(this.angle);
+
         this.gameCtx.fillStyle = BorderColor;
-        this.gameCtx.fillRect(this.x, this.y, this.width, this.height * 0.2);
+        this.gameCtx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height * 0.2);
+
         this.gameCtx.fillStyle = MainColor;
-        this.gameCtx.fillRect(this.x, this.y + this.height * 0.2, this.width, this.height * 0.6);
+        this.gameCtx.fillRect(-this.width / 2, -this.height / 2 + this.height * 0.2, this.width, this.height * 0.6);
+
         this.gameCtx.fillStyle = BorderColor;
-        this.gameCtx.fillRect(this.x, this.y + this.height * 0.8, this.width, this.height * 0.2);
+        this.gameCtx.fillRect(-this.width / 2, -this.height / 2 + this.height * 0.8, this.width, this.height * 0.2);
+
+        this.gameCtx.translate(this.x, this.y);
+
         this.gameCtx.restore();
     }
 }
@@ -758,4 +887,7 @@ class LargeLaser extends Laser {
     }
 }
 
-export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser, ObstacleNumberAndAlphabet };
+export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser, ObstacleNumberAndAlphabet, BOSSHARD, BOSSSMALLHARD };
+
+// Luu diem so nguoi choi
+// Sua time

@@ -221,7 +221,7 @@ class GameConstructor {
         //     this.game.letterY,
         //     this.game.letterZ,
         // ];
-        // rgba(136, 216, 252, 1) #88D8FC
+        // rgba(136, 216, 252, 1) #88D8FC #FFF5F7 #AFEEEE
         // rgba(140, 212, 252, 1) #8CD4FC
         // rgba(186, 168, 250, 1) #BAA8FA
         // rgba(215, 140, 249, 1) #D78CF9

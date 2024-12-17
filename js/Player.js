@@ -44,7 +44,7 @@ class Player {
         }
 
         if(this.isFalling) {
-            // this.checkShoot = false;
+            this.checkShoot = false;
             this.y += 0.4 * 144 * deltaTime;
         }
 
@@ -80,23 +80,21 @@ class Player {
             this.displayHealth = this.currentHealth;
         }
 
-        // if(this.checkShoot) {
-        //     this.currentMana -= 60 * deltaTime;
-        // }
+        if(this.checkShoot) {
+            this.currentMana -= 60 * deltaTime;
+        }
 
-        // this.updatePositionLargeLaser();
+        this.updatePositionLargeLaser();
     }
 
     draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
-        if (this.isAlive) {
-            this.gameCtx.save();
-            this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
-            this.gameCtx.restore();
-            this.drawScore(scoreX, scoreY);
-            this.drawHealth(healthX, healthY);
-            this.drawImage(imageX, imageY);
-            this.smoke.drawSmokeParticles();
-        }
+        this.gameCtx.save();
+        this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        this.gameCtx.restore();
+        this.drawScore(scoreX, scoreY);
+        this.drawHealth(healthX, healthY);
+        this.drawImage(imageX, imageY);
+        this.smoke.drawSmokeParticles();
     }
 
     drawHealth(healthX, healthY) {
@@ -106,7 +104,6 @@ class Player {
         this.gameCtx.strokeStyle = "#333"; 
         this.gameCtx.lineWidth = 0.76; 
         this.gameCtx.strokeRect(healthX, healthY, 200, 20); 
-
         this.gameCtx.restore();
 
     }
@@ -125,21 +122,17 @@ class Player {
         this.gameCtx.restore();
     }
 
-    // updatePositionLargeLaser() {
-    //     this.largeLaser.x = this.x + this.width / 2;
-    //     this.largeLaser.width = gameCanvas.width - this.x;
-    //     this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
-    // }
+    updatePositionLargeLaser() {
+        this.largeLaser.x = this.x + this.width / 2;
+        this.largeLaser.width = gameCanvas.width - this.x;
+        this.largeLaser.y = this.y + this.height / 2 - this.largeLaser.height / 2;
+    }
 
-    // drawLargeLaser(BorderColor, MainColor) {
-    //     if(this.checkShoot) {
-    //         this.largeLaser.draw(BorderColor, MainColor);
-    //     }
-    // }
-
-    // shoot() {
-
-    // }
+    drawLargeLaser(BorderColor, MainColor) {
+        if(this.checkShoot) {
+            this.largeLaser.draw(BorderColor, MainColor);
+        }
+    }
 
     reset() {
         this.currentMana = this.maxMana;
@@ -163,7 +156,7 @@ class Player {
 class PlayerMedium extends Player {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
-        this.maxMana = 350;
+        this.maxMana = 400;
         this.currentMana = this.maxMana;
         this.displayMana = this.currentMana;
     }
@@ -190,10 +183,18 @@ class PlayerMedium extends Player {
 
     draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
         super.draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY);
-        if(this.isAlive) {
-            this.drawMana(manaX, manaY);
-        }
+        this.drawMana(manaX, manaY);
     }
 }
 
-export {Player, PlayerMedium};
+class PlayerHard extends PlayerMedium {
+    constructor(game, image, gameCtx, id) {
+        super(game, image, gameCtx, id);
+    }
+
+    draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {
+        super.draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY);
+    }
+}
+
+export {Player, PlayerMedium, PlayerHard};
