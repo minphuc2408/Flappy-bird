@@ -342,32 +342,6 @@ class GameHard extends Game {
         this.smallBossOnce = true;
     }
 
-    updateSmallBoss() {
-        for (let i = 0; i < this.smallBossMax; i++) {
-            const smallBoss = new BOSSSMALLHARD(this, gameCtx, 0); 
-            let y = (gameCanvas.height - smallBoss.height) / 5 * (i + 1); 
-            smallBoss.y = y; 
-            this.smallBoss.push(smallBoss);
-        }
-        this.boss.push(new BOSSHARD(this, gameCtx));
-    }
-
-    udpatePlayerHandgestrue() {
-        this.players = [];
-        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
-        this.playerInGame = [...this.players];
-    }
-
-    updatePlayers(players) {
-        this.players = []; //1 line bug 2 hours
-        for (let i = 0; i < players; i++) {
-            let player;
-            player = new PlayerHard(this, this.image[i], gameCtx, i + 1);
-            this.players.push(player);
-        }
-        this.playerInGame = [...this.players];
-    }
-
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
         //Obstacle
