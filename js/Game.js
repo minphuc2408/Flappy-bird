@@ -26,6 +26,8 @@ class Game {
         //Game score
         this.scoreOverall = 0;
         this.scorePlayers = [];
+        this.highScore = [];
+        this.loadHighScore();
         //Start screen
         this.gameScreen = gameScreen(this, gameCtx, gameCanvas, this.handgesture);
         //Time
@@ -34,6 +36,17 @@ class Game {
         this.isGameStarted = false;
         this.isGameOver = false;
         this.pause = false;
+    }
+
+    saveHighScore() {
+        localStorage.setItem('highScore', JSON.stringify(this.highScore));
+    }
+
+    loadHighScore() {
+        const highScoreString = localStorage.getItem('highScore');
+        if (highScoreString) {
+            this.highScore = JSON.parse(highScoreString);
+        }
     }
 
     render(deltaTime = 0) {
@@ -342,6 +355,32 @@ class GameHard extends Game {
         this.smallBossOnce = true;
     }
 
+    updateSmallBoss() {
+        for (let i = 0; i < this.smallBossMax; i++) {
+            const smallBoss = new BOSSSMALLHARD(this, gameCtx, 0); 
+            let y = (gameCanvas.height - smallBoss.height) / 5 * (i + 1); 
+            smallBoss.y = y; 
+            this.smallBoss.push(smallBoss);
+        }
+        this.boss.push(new BOSSHARD(this, gameCtx));
+    }
+
+    udpatePlayerHandgestrue() {
+        this.players = [];
+        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
+        this.playerInGame = [...this.players];
+    }
+
+    updatePlayers(players) {
+        this.players = []; //1 line bug 2 hours
+        for (let i = 0; i < players; i++) {
+            let player;
+            player = new PlayerHard(this, this.image[i], gameCtx, i + 1);
+            this.players.push(player);
+        }
+        this.playerInGame = [...this.players];
+    }
+
     update(gameTime, deltaTime) {
         super.update(gameTime, deltaTime);
         //Obstacle
@@ -399,7 +438,7 @@ class GameHard extends Game {
                     break;
             }
             if(player.isAlive) {
-                player.draw(gapPlayer + 80, 30, gapPlayer + 15, 60, gapPlayer + 15, 90, gapPlayer + 10, 10);
+                player.draw(gapPlayer + 80, 30, gapPlayer + 15, 60, gapPlayer + 15, 90, gapPlayer + 10, 10, gapPlayer + 80, gapPlayer + 30);
             }
             gapPlayer += 250;
         });
@@ -408,11 +447,15 @@ class GameHard extends Game {
         
         let gapUfo = 70;
         this.smallBoss.forEach((smallBoss) => {
-            smallBoss.draw(gameTime, 40, gapUfo + 20, 10);
+            if(smallBoss.y <= gameCanvas.height) {
+                smallBoss.draw(gameTime, 40, gapUfo + 20, 10);
+            }
             gapUfo += 20;
         });
         this.boss.forEach((boss) => {
-            boss.draw(gameTime, 40, 60);
+            if(boss.y <= gameCanvas.height) {
+                boss.draw(gameTime, 40, 60);
+            }
         });
     }
 

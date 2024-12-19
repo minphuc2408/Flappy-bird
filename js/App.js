@@ -71,7 +71,7 @@ window.addEventListener('load', function () {
     const arrayList = [firstList, secondList, thirdList, fourthList];
     let currentIndex = 0;
     btnNext.onclick = () => {
-        if(currentIndex < arrayList.length - 1) {
+        if(currentIndex < arrayList.length - 1 && currentIndex <= 1) {
             arrayList[currentIndex].classList.replace("visible", "notvisibility");
             arrayList[currentIndex + 1].classList.replace("notvisibility", "visible");
             currentIndex++;
@@ -86,7 +86,7 @@ window.addEventListener('load', function () {
     };
 
     const keyFlap = ["Space", "KeyA", "KeyK"];
-    const keyShoot = ["KeyM", "KeyS", "KeyL"];
+    const keyShoot = ["KeyB", "KeyS", "KeyL"];
     window.addEventListener("keydown", (e) => {
         if(gameflabird.classList.contains("visible")) {
             if(e.code === "KeyO") {
@@ -114,7 +114,7 @@ window.addEventListener('load', function () {
                     player.currentMana -= 5;
                     player.pressed = true;
                 }
-                if(e.code === keyshoot) {
+                if(e.code === keyshoot && (game === levelGame[3])) {
                     player.checkShoot = true;
                 }
 

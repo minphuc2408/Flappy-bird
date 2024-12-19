@@ -138,6 +138,21 @@ h1 {
     }
 }
 
+.back {
+    width: 40px;
+    height: 40px;
+}
+
+.btn-back {
+    z-index: 2;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
 .btn-next {
     margin-left: auto;
 }

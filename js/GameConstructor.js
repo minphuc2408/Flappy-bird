@@ -63,6 +63,12 @@ class GameConstructor {
         this.game.powerImage = new Image();
         this.game.powerImage.src = './assets/img/power.png';
 
+        this.game.extraImage = new Image();
+        this.game.extraImage.src = './assets/img/extra.png'
+
+        this.game.miniImage = new Image();
+        this.game.miniImage.src = './assets/img/mini.png'
+
         this.game.letterA = new Image();
         this.game.letterA.src = "./assets/img/A.png"
 

@@ -155,8 +155,10 @@ class ObstacleHandler {
             case 'mercury':
             case 'jupiter':
             case 'venus':
-            case 'blackhole':
                 player.shieldActive = false;
+                break;
+            case 'blackhole':
+                player.currentHealth = 0;
                 break;
             case 'health':
                 player.shieldActive = true;
@@ -512,7 +514,7 @@ class Enemy {
     checkCollisionLargeLaserOfPlayer() {
         this.game.playerInGame.forEach((player, index) => {
             if(this.isColliding(player.largeLaser, this) && player.checkShoot) {
-                this.currentHealth -= 100;
+                this.currentHealth -= 30;
             }
         });
     }
@@ -678,8 +680,15 @@ class BOSS extends Enemy {
         this.gameCtx.translate(gameCanvas.width, 0); 
         this.gameCtx.scale(-1, 1);
         this.gameCtx.drawImage(this.image, healthX - 30, healthY, 26, 26);
+        this.gameCtx.fillStyle = "#333";
+        this.gameCtx.fillRect(healthX, healthY, 200, 20);
         this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
+        this.gameCtx.translate(gameCanvas.width, 0); 
+        this.gameCtx.scale(-1, 1);
+        this.gameCtx.font = "12px Ubuntu";
+        this.gameCtx.fillStyle = "#fff";
+        this.gameCtx.fillText(`${Math.max(this.displayHealth, 0)} / ${this.maxHealth}`, gameCanvas.width - 130, healthY + 14);
         this.gameCtx.restore();
     }
 

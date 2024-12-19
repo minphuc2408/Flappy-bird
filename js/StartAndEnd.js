@@ -38,11 +38,24 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
         gameOverContainer.appendChild(scores);
 
         game.scorePlayers.forEach((player) => {
+            game.highScore.push(game.scoreOverall);
             let scoreText = document.createElement("div");
             scoreText.className = "score-text";
             scoreText.innerText = `Score player ${player.id}: ${player.score}`;
             scores.appendChild(scoreText);
         });
+
+        const highScore = document.createElement("div");
+        game.highScore.sort((a, b) => b - a);
+        if (game.highScore.length >= 5) {
+            game.highScore.splice(5, 5);
+        }
+        game.saveHighScore();
+        highScore.className = "score-text";
+        highScore.innerText = `High Score: ${game.highScore[0]}`
+        highScore.style.textAlign = "center"
+        scores.appendChild(highScore)
+        
 
         const playAgainText = document.createElement('div');
         playAgainText.className = 'play-again-text';

@@ -81,7 +81,7 @@ class Player {
         }
 
         if(this.checkShoot) {
-            this.currentMana -= 60 * deltaTime;
+            this.currentMana -= Math.floor(60 * deltaTime);
         }
 
         this.updatePositionLargeLaser();
@@ -97,10 +97,15 @@ class Player {
         this.smoke.drawSmokeParticles();
     }
 
-    drawHealth(healthX, healthY) {
+    drawHealth(healthX, healthY, gapX, gapY) {
         this.gameCtx.save(); 
+        this.gameCtx.fillStyle = "#333";
+        this.gameCtx.fillRect(healthX, healthY, 200, 20);
         this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
+        this.gameCtx.font = "12px Ubuntu"; 
+        this.gameCtx.fillStyle = "#fff"; 
+        this.gameCtx.fillText(`${this.displayHealth} / ${this.maxHealth}`, healthX + 105, healthY + 14);
         this.gameCtx.strokeStyle = "#333"; 
         this.gameCtx.lineWidth = 0.76; 
         this.gameCtx.strokeRect(healthX, healthY, 200, 20); 
@@ -143,7 +148,7 @@ class Player {
         this.isFalling = false;
         this.score = 0;
         this.checkShoot = false;
-        this.hasShield = false;
+        this.shieldActive = false;
 
         this.x = gameCanvas.width / 3;
         this.y = gameCanvas.height / 2;
@@ -156,7 +161,7 @@ class Player {
 class PlayerMedium extends Player {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
-        this.maxMana = 400;
+        this.maxMana = 500;
         this.currentMana = this.maxMana;
         this.displayMana = this.currentMana;
     }
@@ -168,7 +173,7 @@ class PlayerMedium extends Player {
         }
 
         if(this.displayMana > this.currentMana) {
-            this.displayMana -= 0.5;
+            this.displayMana -= 1;
         } else {
             this.displayMana = this.currentMana;
         }
@@ -176,8 +181,13 @@ class PlayerMedium extends Player {
 
     drawMana(manaX, manaY) {
         this.gameCtx.save();
+        this.gameCtx.fillStyle = "#333";
+        this.gameCtx.fillRect(manaX, manaY, 200, 10);
         this.gameCtx.fillStyle = "rgba(0, 214, 255, 1)";
-        this.gameCtx.fillRect(manaX, manaY, Math.max((this.displayMana / this.maxMana) * 200, 0), 10);
+        this.gameCtx.fillRect(manaX, manaY, Math.max((this.displayMana / this.maxMana) * 200, 0), 12);
+        this.gameCtx.font = "10px Ubuntu";
+        this.gameCtx.fillStyle = "#fff";
+        this.gameCtx.fillText(`${this.displayMana} / ${this.maxMana}`, manaX + 106, manaY + 10);
         this.gameCtx.restore();
     }
 
@@ -190,6 +200,11 @@ class PlayerMedium extends Player {
 class PlayerHard extends PlayerMedium {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
+    }
+
+    update(deltaTime) {
+       super.update(deltaTime);
+       
     }
 
     draw(scoreX, scoreY, healthX, healthY, manaX, manaY, imageX, imageY) {

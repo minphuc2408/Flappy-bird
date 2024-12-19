@@ -10,6 +10,7 @@ class Handgesture {
         this.hold = false;
         this.isRunning = false;
         this.landmarks = [];
+        this.handle = new Array(5).fill(0);
 
         this.hands = new Hands({
             locateFile: (file) => {
@@ -18,7 +19,7 @@ class Handgesture {
         });
 
         this.hands.setOptions({
-            maxNumHands: 2,
+            maxNumHands: 1,
             modelComplexity: 1,
             minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5
@@ -62,47 +63,13 @@ class Handgesture {
 
     numberOne() {
         if (this.landmarks.length === 0) return false;
-
-        const tipIds = [12, 16, 20];
-        const baseIds = [9, 13, 17];
-
-        let closedFingers = 0;
-
-        for (const landmarks of this.landmarks) {
-            for (let i = 0; i < tipIds.length; i++) {
-                const tip = landmarks[tipIds[i]];
-                const base = landmarks[baseIds[i]];
-
-                if (tip.y > base.y) {
-                    closedFingers++;
-                }
-            }
-        }
-
-        return closedFingers >= 3 && this.landmarks.every(landmarks => landmarks[8].y < landmarks[5].y);
+        return this.handle[0] && this.handle[3] && this.handle[4] && !this.handle[1] && this.handle[2];
     }
 
     numberTwo() {
         if (this.landmarks.length === 0) return false;
-
-        const tipIds = [16, 20];
-        const baseIds = [13, 17];
-        let closedFingers = 0;
-
-        for (const landmarks of this.landmarks) {
-            for (let i = 0; i < tipIds.length; i++) {
-                const tip = landmarks[tipIds[i]];
-                const base = landmarks[baseIds[i]];
-
-                if (tip.y > base.y) {
-                    closedFingers++;
-                }
-            }
-        }
-
-        return closedFingers >= 2 &&
-            this.landmarks.every(landmarks => landmarks[8].y < landmarks[5].y) &&
-            this.landmarks.every(landmarks => landmarks[12].y < landmarks[9].y);
+        return this.handle[0] && this.handle[3] && this.handle[4] && !this.handle[1] && !this.handle[2];
+        
     }
 
     pauseGame() {
@@ -112,24 +79,25 @@ class Handgesture {
 
     isHandClosed() {
         if (this.landmarks.length === 0) return false;
+        return this.handle.every((i) => i === 1);
 
-        const tipIds = [8, 12, 16, 20];
-        const baseIds = [6, 10, 14, 18];
+    }
 
-        let closedFingers = 0;
+    handleArray() {
+        const up = [4, 8, 12, 16, 20];
+        const down = [3, 6, 10, 14, 18];
 
         for (const landmarks of this.landmarks) {
-            for (let i = 0; i < tipIds.length; i++) {
-                const tip = landmarks[tipIds[i]];
-                const base = landmarks[baseIds[i]];
-
-                if (tip.y > base.y) {
-                    closedFingers++;
+            for (let i = 0; i < up.length; i++) {
+                if (landmarks[up[i]].y > landmarks[down[i]].y) {
+                    this.handle[i] = 1;
+                } else if (landmarks[up[0]].x < landmarks[down[0]].x) {
+                    this.handle[0] = 1;
+                } else {
+                    this.handle[i] = 0;
                 }
             }
         }
-
-        return closedFingers >= 4;
     }
 
     startGame() {
@@ -163,7 +131,7 @@ class Handgesture {
 
     onResults(results) {
         if (!this.isRunning) return;
-
+        this.handleArray();
         this.drawHandLandmarks(results);
         this.handleHandGestures(results);
     }
