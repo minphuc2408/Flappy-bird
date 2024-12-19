@@ -8,7 +8,8 @@ const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
 
 class Game {
-    constructor() {
+    constructor(name) {
+        this.name = name;
         //Key 
         this.handgesture = new Handgesture(this);
         this.hasTouch = false;
@@ -39,11 +40,13 @@ class Game {
     }
 
     saveHighScore() {
-        localStorage.setItem('highScore', JSON.stringify(this.highScore));
+        const key = `Game_${this.name}_highScore`
+        localStorage.setItem(key, JSON.stringify(this.highScore));
     }
 
     loadHighScore() {
-        const highScoreString = localStorage.getItem('highScore');
+        const key = `Game_${this.name}_highScore`
+        const highScoreString = localStorage.getItem(key);
         if (highScoreString) {
             this.highScore = JSON.parse(highScoreString);
         }
@@ -157,7 +160,7 @@ class Game {
 
 class GameEasy extends Game {
     constructor() {
-        super();
+        super("GameEasy");
     }
 
     udpatePlayerHandgestrue() {
@@ -206,7 +209,7 @@ class GameEasy extends Game {
 
 class GameChild extends Game {
     constructor() {
-        super();
+        super("GameChild");
     }
 
     udpatePlayerHandgestrue() {
@@ -251,7 +254,7 @@ class GameChild extends Game {
 
 class GameMedium extends Game {
     constructor() {
-        super();
+        super("GameMedium");
         this.boss = [];
         this.smallBoss = [];
         this.smallBossMax = 4;
@@ -348,7 +351,7 @@ class GameMedium extends Game {
 
 class GameHard extends Game {
     constructor() {
-        super();
+        super("GameHard");
         this.boss = [];
         this.smallBoss = [];
         this.smallBossMax = 4;
