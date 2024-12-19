@@ -46,6 +46,7 @@ class Game {
 
     loadHighScore() {
         const key = `Game_${this.name}_highScore`
+        console.log(key);
         const highScoreString = localStorage.getItem(key);
         if (highScoreString) {
             this.highScore = JSON.parse(highScoreString);
