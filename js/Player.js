@@ -26,11 +26,12 @@ class Player {
         this.v = 0;
         this.width = 60;
         this.height = 60;
-        this.x = gameCanvas.width / 3;
+        this.x = gameCanvas.width / 4;
         this.y = gameCanvas.height / 2 - this.height / 2;
     }
 
     flap() {
+        this.game.playSound(this.game.flapSound);
         this.v = this.l;
     }
 
@@ -62,6 +63,7 @@ class Player {
         }
 
         if (this.y - this.height >= gameCanvas.height) {
+            this.game.playSound(this.game.playerDieSound);
             this.isAlive = false;
         }
 
@@ -81,7 +83,7 @@ class Player {
         }
 
         if(this.checkShoot) {
-            this.currentMana -= Math.floor(60 * deltaTime);
+            this.currentMana -= Math.round(deltaTime * 100);
         }
 
         this.updatePositionLargeLaser();
@@ -110,7 +112,6 @@ class Player {
         this.gameCtx.lineWidth = 0.76; 
         this.gameCtx.strokeRect(healthX, healthY, 200, 20); 
         this.gameCtx.restore();
-
     }
 
     drawScore(scoreX, scoreY) {
@@ -150,7 +151,7 @@ class Player {
         this.checkShoot = false;
         this.shieldActive = false;
 
-        this.x = gameCanvas.width / 3;
+        this.x = gameCanvas.width / 4;
         this.y = gameCanvas.height / 2;
         this.v = 0;
 
@@ -161,7 +162,7 @@ class Player {
 class PlayerMedium extends Player {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
-        this.maxMana = 500;
+        this.maxMana = 600;
         this.currentMana = this.maxMana;
         this.displayMana = this.currentMana;
     }
@@ -200,6 +201,7 @@ class PlayerMedium extends Player {
 class PlayerHard extends PlayerMedium {
     constructor(game, image, gameCtx, id) {
         super(game, image, gameCtx, id);
+        this.maxMana = 1000;
     }
 
     update(deltaTime) {

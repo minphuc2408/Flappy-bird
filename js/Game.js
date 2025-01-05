@@ -1,6 +1,6 @@
 import {Player, PlayerMedium, PlayerHard} from "./Player.js";   
 import GameConstructor from "./GameConstructor.js";
-import {ObstacleHandler, BOSS, BOSSSMALL, ObstacleNumberAndAlphabet, BOSSHARD, BOSSSMALLHARD } from "./GameObstacles.js";
+import {ObstacleHandler, BOSSMEDIUM, BOSSSMALL, ObstacleNumberAndAlphabet, BOSSHARD, BOSSSMALLHARD, BOSSSMALLMEDIUM } from "./GameObstacles.js";
 import Handgesture from "./Handgesture.js";
 import { gameScreen } from "./StartAndEnd.js";
 
@@ -9,6 +9,7 @@ const gameCtx = gameCanvas.getContext("2d");
 
 class Game {
     constructor(name) {
+        //name
         this.name = name;
         //Key 
         this.handgesture = new Handgesture(this);
@@ -17,7 +18,7 @@ class Game {
         this.loadImage = false;
         this.gameConstructor = new GameConstructor(this);
         //Player
-        this.image = [this.spaceShip1Image, this.spaceShip2Image,this.spaceShip3Image];
+        this.image = [this.spaceShip1Image, this.spaceShip2Image, this.spaceShip3Image];
         this.players = [];
         this.playerInGame = [...this.players]; 
         //Obstacle
@@ -34,9 +35,29 @@ class Game {
         //Time
         this.startTime = 0;
         this.currentTime = 0;
+        this.totalPauseTime = 0;  // Tổng thời gian đã pause
+        this.lastPauseStartTime = 0;  // Thời điểm bắt đầu pause gần nhất
         this.isGameStarted = false;
         this.isGameOver = false;
         this.pause = false;
+        //Sound
+        this.flapSound = document.getElementById("flap");
+        this.playerDieSound = document.getElementById("player-die");
+        this.startGameSound = document.getElementById("start-game");
+        this.playerShootSound = document.getElementById("player-shoot");
+
+        this.collisionSound = document.getElementById("player-collision");
+        this.collisionSound.volume = 0.5;
+        this.collectSound = document.getElementById("collect");
+        this.collectSound.volume = 0.5;
+
+        this.shoot = document.getElementById('boss-shoot');  
+        this.fireAndSnowSound = document.getElementById("boss-fire-and-snow");
+    }
+
+    playSound(sound) {
+        sound.currentTime = 0;
+        sound.play();
     }
 
     saveHighScore() {
@@ -46,7 +67,6 @@ class Game {
 
     loadHighScore() {
         const key = `Game_${this.name}_highScore`
-        console.log(key);
         const highScoreString = localStorage.getItem(key);
         if (highScoreString) {
             this.highScore = JSON.parse(highScoreString);
@@ -56,6 +76,8 @@ class Game {
     render(deltaTime = 0) {
         if (!this.isGameStarted && !this.isGameOver) {
             this.pause = false;
+            this.totalPauseTime = 0;
+            this.lastPauseStartTime = 0;
             this.gameScreen.drawStartScreen();
             if(this.handgesture.isHandClosed()) {
                 this.startTime = performance.now();
@@ -65,23 +87,28 @@ class Game {
         }
         
         if(this.pause && !this.isGameOver) {
+            if (this.lastPauseStartTime === 0) {
+                this.lastPauseStartTime = performance.now();
+            }
             this.gameScreen.pauseGameScreen();
             return;
+        }
+
+        if (!this.pause && this.lastPauseStartTime !== 0) {
+            this.totalPauseTime += performance.now() - this.lastPauseStartTime;
+            this.lastPauseStartTime = 0;
         }
         
         if (this.isGameOver) {
             this.gameScreen.drawGameOverScreen(); 
             return;
         }
+        
         if(deltaTime <= 0) {
             return;
         }
         
-        if(this.pause) {
-            this.currentTime = this.currentTime - this.getPauseGameTime();
-        } else {
-            this.currentTime = this.getCurrentGameTime();
-        }
+        this.currentTime = this.getCurrentGameTime();
         this.draw(this.currentTime);
         this.update(this.currentTime, deltaTime);
     }
@@ -126,10 +153,25 @@ class Game {
         }
     }
 
+    getCurrentGameTime() {
+        if (!this.isGameStarted) {
+            return 0;
+        }
+        const currentTime = performance.now();
+        let gameTime = (currentTime - this.startTime - this.totalPauseTime) / 1000;
+        if (this.pause && this.lastPauseStartTime !== 0) {
+            gameTime -= (currentTime - this.lastPauseStartTime) / 1000;
+        }
+        
+        return gameTime;
+    }
+
     reset() {
         this.playerInGame = [...this.players];
         this.currentTime = 0;
         this.startTime = 0;
+        this.totalPauseTime = 0;
+        this.lastPauseStartTime = 0;
         this.isGameStarted = false;
         this.isGameOver = false;
         this.scoreOverall = 0;
@@ -142,26 +184,19 @@ class Game {
         });
         this.hasTouch = false;
         this.loadImage = false;
-    }
-
-    getCurrentGameTime() {
-        if (!this.isGameStarted) {
-            return 0;
-        }
-        return (performance.now() - this.startTime) / 1000;
-    }
-
-    getPauseGameTime() {
-        if (!this.pause) {
-            return 0;
-        }
-        return (performance.now() - this.pauseTime) / 1000;
+        this.frames = 0;
+        this.fps = 0;
     }
 }
 
 class GameEasy extends Game {
     constructor() {
         super("GameEasy");
+        this.sound = document.getElementById("game");
+        this.sound.addEventListener("ended", () => {
+            this.sound.currentTime = 0;
+            this.sound.play();
+        });
     }
 
     udpatePlayerHandgestrue() {
@@ -211,6 +246,7 @@ class GameEasy extends Game {
 class GameChild extends Game {
     constructor() {
         super("GameChild");
+        this.sound = document.getElementById("gameChild");
     }
 
     udpatePlayerHandgestrue() {
@@ -233,8 +269,7 @@ class GameChild extends Game {
         super.update(gameTime, deltaTime);
         this.obstacleNumberAndAlphabet.updateObstacles(gameTime, deltaTime);
         this.obstacleNumberAndAlphabet.framesSinceLastObstacle += deltaTime;
-        // this.obstacleNumberAndAlphabet.createRandomMovingObstacles(gameTime);
-        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.5) {
+        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.7) {
             this.obstacleNumberAndAlphabet.pushObstacle(gameTime);
             this.obstacleNumberAndAlphabet.framesSinceLastObstacle = 0;
         }
@@ -253,6 +288,22 @@ class GameChild extends Game {
     }
 }
 
+class GameChildEasy extends GameChild {
+    constructor() {
+        super("GameChild");
+    }
+
+    update(gameTime, deltaTime) {
+        super.update(gameTime, deltaTime);
+        this.obstacleNumberAndAlphabet.updateObstacles(gameTime, deltaTime);
+        this.obstacleNumberAndAlphabet.framesSinceLastObstacle += deltaTime;
+        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.7) {
+            this.obstacleNumberAndAlphabet.pushObstacle(gameTime);
+            this.obstacleNumberAndAlphabet.framesSinceLastObstacle = 0;
+        }
+    }
+}
+
 class GameMedium extends Game {
     constructor() {
         super("GameMedium");
@@ -260,21 +311,22 @@ class GameMedium extends Game {
         this.smallBoss = [];
         this.smallBossMax = 4;
         this.smallBossOnce = true;
+        this.sound = document.getElementById("game");
     }
 
     updateSmallBoss() {
         for (let i = 0; i < this.smallBossMax; i++) {
-            const smallBoss = new BOSSSMALL(this, gameCtx, 0); 
+            const smallBoss = new BOSSSMALLMEDIUM(this, gameCtx, 0); 
             let y = (gameCanvas.height - smallBoss.height) / 5 * (i + 1); 
             smallBoss.y = y; 
             this.smallBoss.push(smallBoss);
         }
-        this.boss.push(new BOSS(this, gameCtx));
+        this.boss.push(new BOSSMEDIUM(this, gameCtx));
     }
 
     udpatePlayerHandgestrue() {
         this.players = [];
-        this.players.push(new Player(this, this.spaceShip1Image, gameCtx, 1));
+        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
         this.playerInGame = [...this.players];
     }
 
@@ -282,7 +334,7 @@ class GameMedium extends Game {
         this.players = []; //1 line bug 2 hours
         for (let i = 0; i < players; i++) {
             let player;
-            player = new Player(this, this.image[i], gameCtx, i + 1);
+            player = new PlayerMedium(this, this.image[i], gameCtx, i + 1);
             this.players.push(player);
         }
         this.playerInGame = [...this.players];
@@ -315,7 +367,7 @@ class GameMedium extends Game {
         this.boss.forEach((boss, index) => {
             boss.update(gameTime, deltaTime);
             if(boss.x >= gameCanvas.width) {
-                boss.reset();
+                boss.y = gameCanvas.height / 2 - boss.y / 2;
             }
         });
     }
@@ -357,6 +409,7 @@ class GameHard extends Game {
         this.smallBoss = [];
         this.smallBossMax = 4;
         this.smallBossOnce = true;
+        this.sound = document.getElementById("game");
     }
 
     updateSmallBoss() {
@@ -371,7 +424,7 @@ class GameHard extends Game {
 
     udpatePlayerHandgestrue() {
         this.players = [];
-        this.players.push(new PlayerMedium(this, this.spaceShip1Image, gameCtx, 1));
+        this.players.push(new PlayerHard(this, this.spaceShip1Image, gameCtx, 1));
         this.playerInGame = [...this.players];
     }
 
@@ -391,7 +444,7 @@ class GameHard extends Game {
         this.obstacleHandler.updateObstacles(gameTime, deltaTime);
         this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.asteroids, deltaTime, "asteroid");
         this.obstacleHandler.updateMovingObstacles(this.obstacleHandler.missiles, deltaTime, "missile");
-        if(gameTime % 60 < 30) {
+        if(gameTime % 90 < 30) {
             this.obstacleHandler.framesSinceLastObstacle += deltaTime;
             this.obstacleHandler.createRandomMovingObstacles(gameTime);
             if(this.obstacleHandler.framesSinceLastObstacle >=  this.obstacleHandler.obstaclesInterval) {
@@ -421,7 +474,7 @@ class GameHard extends Game {
             }
 
             if(boss.x >= gameCanvas.width) {
-                boss.reset();
+                boss.y = gameCanvas.height / 2 - boss.y / 2;
             }
         });
     }
@@ -471,7 +524,11 @@ class GameHard extends Game {
         this.boss.forEach(boss => {
             boss.reset();
         });
+        this.smallBossOnce = true;
+        this.boss = [];
+        this.smallBoss = [];
+        
     }
 }
 
-export {GameHard, GameMedium, GameEasy, GameChild, Game};
+export {GameHard, GameMedium, GameEasy, GameChild, Game, GameChildEasy};

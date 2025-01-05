@@ -64,10 +64,16 @@ class GameConstructor {
         this.game.powerImage.src = './assets/img/power.png';
 
         this.game.extraImage = new Image();
-        this.game.extraImage.src = './assets/img/extra.png'
+        this.game.extraImage.src = './assets/img/extra.png';
 
         this.game.miniImage = new Image();
-        this.game.miniImage.src = './assets/img/mini.png'
+        this.game.miniImage.src = './assets/img/mini.png';
+
+        this.game.fireImage = new Image();
+        this.game.fireImage.src = './assets/img/fire.png';
+
+        this.game.snowImage = new Image();
+        this.game.snowImage.src = './assets/img/snow.png';
 
         this.game.letterA = new Image();
         this.game.letterA.src = "./assets/img/A.png"
@@ -176,6 +182,12 @@ class GameConstructor {
 
         this.game.number9 = new Image();
         this.game.number9.src = "./assets/img/number-9.png"
+
+        this.game.multiplyImage = new Image();
+        this.game.multiplyImage.src = "./assets/img/multiply.png";
+
+        this.game.equalImage = new Image();
+        this.game.equalImage.src = "./assets/img/=.png";
 
 
 

@@ -47,7 +47,6 @@ function smokeEffect(gameCtx) {
 function shakeScreen (duration) {
     const startTime = performance.now();
     const intensity = 5;
-    console.log(startTime);
 
     const shake = () => {
         const elapsedTime = performance.now() - startTime;

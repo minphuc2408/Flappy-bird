@@ -5,8 +5,10 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
     let pauseContainer; 
 
     function drawBlurredBackground() {
+        gameCtx.save();
         gameCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+        gameCtx.restore();
     }
 
     function drawStartScreen() {
@@ -70,6 +72,12 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
         yesButton.innerText = 'YES';
         yesButton.onclick = () => {
             game.reset();
+            if(document.querySelector(".on").classList.contains("hidden")) {
+            game.sound.currentTime = 0;
+                game.sound.pause();
+            } else {
+                game.sound.play();
+            }
             drawStartScreen();
             document.body.removeChild(gameOverContainer);
             gameOverDisplayed = false;
@@ -82,9 +90,17 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
         noButton.onclick = () => {
             game.reset();
             hand.stop();
+            game.sound.pause();
+            game.sound.currentTime = 0;
+            document.getElementById("app").play();
+            if(document.querySelector(".off").classList.contains("hidden")) {
+                document.querySelector(".on").classList.add("hidden");
+                document.querySelector(".off").classList.remove("hidden");
+            }
+
             document.querySelector('.game-fla-bird').classList.replace('visible', 'hidden');
             document.querySelector('.tutorial').classList.replace('hidden', 'visible');
-            document.querySelector('.choice-player').classList.remove('hidden');
+            document.querySelector('.select-mode').classList.remove('hidden');
             document.querySelector('.button-player').classList.add('hidden');
             document.querySelector('.tutorial .button-player:last-of-type').classList.add('hidden');
 
@@ -99,7 +115,7 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
 
         function checkHandGesture() {
             if(game.isGameOver && hand !== undefined) {
-                if (hand.numberOne()) {
+                if (hand.isHandClosed()) {
                     game.reset();
                         drawStartScreen();
     
@@ -180,7 +196,7 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
         document.body.appendChild(pauseContainer);
 
         function checkHandGesture() {
-            if (hand.numberOne() && game.pause) {
+            if (hand.isHandClosed() && game.pause) {
                 game.pause = false;
                 pauseDisplayed = false;
 

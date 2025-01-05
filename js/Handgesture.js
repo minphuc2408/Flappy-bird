@@ -11,6 +11,7 @@ class Handgesture {
         this.isRunning = false;
         this.landmarks = [];
         this.handle = new Array(5).fill(0);
+        this.handness = [];
 
         this.hands = new Hands({
             locateFile: (file) => {
@@ -19,7 +20,7 @@ class Handgesture {
         });
 
         this.hands.setOptions({
-            maxNumHands: 1,
+            maxNumHands: 2,
             modelComplexity: 1,
             minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5
@@ -63,12 +64,14 @@ class Handgesture {
 
     numberOne() {
         if (this.landmarks.length === 0) return false;
-        return this.handle[0] && this.handle[3] && this.handle[4] && !this.handle[1] && this.handle[2];
+        let sum = this.handle.reduce((a, b) => a + b, 0);
+        return sum === 1;
     }
 
     numberTwo() {
         if (this.landmarks.length === 0) return false;
-        return this.handle[0] && this.handle[3] && this.handle[4] && !this.handle[1] && !this.handle[2];
+        let sum = this.handle.reduce((a, b) => a + b, 0);
+        return sum === 2;
         
     }
 
@@ -79,22 +82,36 @@ class Handgesture {
 
     isHandClosed() {
         if (this.landmarks.length === 0) return false;
-        return this.handle.every((i) => i === 1);
+        return this.handle.every((i) => i === 0);
+    }
 
+    swapRightLeft() {
+        let handLabel  = null;
+        this.handness.forEach((i) => { // Swap right and left
+            handLabel = i.label;
+            if (handLabel === 'Left') {
+                handLabel = 'Right';
+            } else if (handLabel === 'Right') {
+                handLabel = 'Left';
+            }
+        });
+        return handLabel;
     }
 
     handleArray() {
         const up = [4, 8, 12, 16, 20];
-        const down = [3, 6, 10, 14, 18];
-
+        const down = [3, 7, 11, 15, 19];
         for (const landmarks of this.landmarks) {
             for (let i = 0; i < up.length; i++) {
                 if (landmarks[up[i]].y > landmarks[down[i]].y) {
-                    this.handle[i] = 1;
-                } else if (landmarks[up[0]].x < landmarks[down[0]].x) {
-                    this.handle[0] = 1;
-                } else {
                     this.handle[i] = 0;
+                } else {
+                    this.handle[i] = 1;
+                }
+                if(this.swapRightLeft() == "Right") {
+                    this.handle[0] = landmarks[up[0]].x > landmarks[down[0]].x ? 1 : 0;
+                } else {
+                    this.handle[0] = landmarks[up[0]].x > landmarks[down[0]].x ? 0 : 1;
                 }
             }
         }
@@ -108,18 +125,25 @@ class Handgesture {
 
     drawHandLandmarks(results) {
         this.handCtx.save();
-        this.handCtx.translate(this.handCanvas.width, 0);
-        this.handCtx.scale(-1, 1);
+        // this.handCtx.translate(this.handCanvas.width, 0);
+        // this.handCtx.scale(-1, 1);
         this.handCtx.drawImage(results.image, 0, 0, this.handCanvas.width, this.handCanvas.height);
-
+    
         if (results.multiHandLandmarks) {
             for (const landmarks of results.multiHandLandmarks) {
-                drawConnectors(this.handCtx, landmarks, HAND_CONNECTIONS, { color: "00ff00", lineWidth: 4 });
-                drawLandmarks(this.handCtx, landmarks, { color: '#FF0000', lineWidth: 1 });
+                drawConnectors(this.handCtx, landmarks, HAND_CONNECTIONS, {
+                    color: "00ff00",
+                    lineWidth: 2, 
+                });
+                drawLandmarks(this.handCtx, landmarks, {
+                    color: "#FF0000",
+                    radius: 3, 
+                });
             }
         }
         this.handCtx.restore();
     }
+    
 
     handleHandGestures(results) {
         if (results.multiHandLandmarks) {
@@ -127,13 +151,14 @@ class Handgesture {
         } else {
             this.landmarks = [];
         }
+        this.handness = results.multiHandedness;
     }
 
     onResults(results) {
         if (!this.isRunning) return;
-        this.handleArray();
-        this.drawHandLandmarks(results);
         this.handleHandGestures(results);
+        this.drawHandLandmarks(results);
+        this.handleArray();
     }
 }
 

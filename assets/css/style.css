@@ -100,7 +100,7 @@ h1 {
     font-size: 8rem;
 }
 
-.button-player, .choice-player {
+.button-player, .choice-player, .select-mode, .mode-child {
     position: absolute;
     bottom: 0;
     margin-top: 30px;
@@ -184,9 +184,28 @@ h1 {
     border-right: 2px solid var(--white);
 }
 
-.btn-play, .choice-player-game {
+.btn-play, .choice-player-game, .select-mode-game, .mode-child-game {
     margin-bottom: 40px;
 }
+
+.on, .off {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 36px;
+    height: 36px;
+    color: var(--white);
+    border: none;
+    background-color: transparent;
+    z-index: 2;
+    cursor: pointer;
+
+}#gameCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+
 
 /* ========== Tutorial ========== */
 .tutorial {
@@ -267,11 +286,6 @@ h1 {
 }
 
 /* ========= GameCanvas ========== */
-#gameCanvas {
-    width: 100%;
-    height: 100%;
-}
-
 .game-over-container, .pause-container {
     display: flex;
     flex-direction: column;

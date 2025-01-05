@@ -1,9 +1,5 @@
 import {shakeScreen} from "./gameEffects.js"
 
-const TIMEINTERVAL = 60;
-const TIME_START = 32;
-const TIME_END = 55;
-
 class ObstacleHandler {
     constructor(game, gameCtx) {
         this.game = game;
@@ -37,13 +33,26 @@ class ObstacleHandler {
             { type: 'mercury', image: this.game.mercuryImage, weight: 10 },
             { type: 'jupiter', image: this.game.jupiterImage, weight: 10 },
             { type: 'venus', image: this.game.venusImage, weight: 10 },
-            { type: 'blackHole', image: this.game.blackHoleImage, weight: 4 },
+            { type: 'blackhole', image: this.game.blackHoleImage, weight: 4 },
             { type: 'shield', image: this.game.shieldImage, weight: 5 },
             { type: 'health', image: this.game.healthImage, weight: 5 },
             { type: 'power', image: this.game.powerImage, weight: 10 },
         ];
-
+        this.math = [
+            {type: "multiply", image: this.game.multiplyImage},
+            {type: "equal", image: this.game.equalImage}
+        ];
         this.alphabetAndNumber = [
+            {type: "0", image: this.game.number0, weight: this.weightRandom},
+            {type: "1", image: this.game.number1, weight: this.weightRandom},
+            {type: "2", image: this.game.number2, weight: this.weightRandom},
+            {type: "3", image: this.game.number3, weight: this.weightRandom},
+            {type: "4", image: this.game.number4, weight: this.weightRandom},
+            {type: "5", image: this.game.number5, weight: this.weightRandom},
+            {type: "6", image: this.game.number6, weight: this.weightRandom},
+            {type: "7", image: this.game.number7, weight: this.weightRandom},
+            {type: "8", image: this.game.number8, weight: this.weightRandom},
+            {type: "9", image: this.game.number9, weight: this.weightRandom},
             {type: "A", image: this.game.letterA, weight: this.weightRandom},
             {type: "B", image: this.game.letterB, weight: this.weightRandom},
             {type: "C", image: this.game.letterC, weight: this.weightRandom},
@@ -69,19 +78,7 @@ class ObstacleHandler {
             {type: "W", image: this.game.letterW, weight: this.weightRandom},
             {type: "X", image: this.game.letterX, weight: this.weightRandom},
             {type: "Y", image: this.game.letterY, weight: this.weightRandom},
-            {type: "Z", image: this.game.letterZ, weight: this.weightRandom},
-            {type: "0", image: this.game.number0, weight: this.weightRandom},
-            {type: "1", image: this.game.number1, weight: this.weightRandom},
-            {type: "2", image: this.game.number2, weight: this.weightRandom},
-            {type: "3", image: this.game.number3, weight: this.weightRandom},
-            {type: "4", image: this.game.number4, weight: this.weightRandom},
-            {type: "5", image: this.game.number5, weight: this.weightRandom},
-            {type: "6", image: this.game.number6, weight: this.weightRandom},
-            {type: "7", image: this.game.number7, weight: this.weightRandom},
-            {type: "8", image: this.game.number8, weight: this.weightRandom},
-            {type: "9", image: this.game.number9, weight: this.weightRandom},];
-            // {type: 'health', image: this.game.healthImage, weight: 3},
-        this.pickRandomArray = [];
+            {type: "Z", image: this.game.letterZ, weight: this.weightRandom}];
     }
 
     reset(){
@@ -92,18 +89,18 @@ class ObstacleHandler {
         this.lastAsteroidTime = 0;
         this.missiles = [];
         this.lastMissileTime = 0;
-        this.pickRandomArray = [];
+        this.pickRandomAlphabetArray = [];
         this.obstaclePositions = [];
     }
 
     checkCollision(player, obstacle) {
-        return player.x + player.width > obstacle.x && player.x < obstacle.x + this.obstacleWidth &&
-        player.y + player.height > obstacle.y && player.y < obstacle.y + this.obstacleHeight;
+        return player.x + player.width > obstacle.x && player.x < obstacle.x + obstacle.width &&
+        player.y + player.height > obstacle.y && player.y < obstacle.y + obstacle.height;
     }
 
     checkLaser(player, obstacle) {
-        return player.x + player.width > obstacle.x && player.x < obstacle.x + this.obstacleWidth &&
-        player.y + player.height > obstacle.y && player.y < obstacle.y + this.obstacleHeight;
+        return player.x + player.width > obstacle.x && player.x < obstacle.x + obstacle.width &&
+        player.y + player.height > obstacle.y && player.y < obstacle.y + obstacle.height;
 
     }
 
@@ -115,7 +112,6 @@ class ObstacleHandler {
     
     updateObstacles(gameTime, deltaTime) {
         this.updatePosition(this.obstacles, deltaTime);
-    
         this.game.playerInGame.forEach((player) => {
             this.obstacles.forEach((obstacle, index) => {
                 if (this.checkCollision(player, obstacle)) {
@@ -125,12 +121,12 @@ class ObstacleHandler {
                     this.obstacles.splice(index, 1);
                 }
                 
-                if (obstacle.isColumn && obstacle.x + this.obstacleWidth < player.x && !obstacle.passed) {
+                if (obstacle.isColumn && obstacle.x + obstacle.width < player.x && !obstacle.passed) {
                    this.game.scoreOverall++;
                     obstacle.passed = true;
                 }
     
-                if (obstacle.x + this.obstacleWidth < 0) {
+                if (obstacle.x + obstacle.width < 0) {
                     this.obstacles.splice(index, 1);
                 }
             });
@@ -155,19 +151,28 @@ class ObstacleHandler {
             case 'mercury':
             case 'jupiter':
             case 'venus':
+                this.game.playSound(this.game.collisionSound);
                 player.shieldActive = false;
                 break;
             case 'blackhole':
+                this.game.playSound(this.game.playerDieSound);
+                player.shieldActive = false;
                 player.currentHealth = 0;
                 break;
+            case 'shield': 
+                this.game.playSound(this.game.collectSound);
+                player.shieldActive = true;
+                break;
             case 'health':
+                this.game.playSound(this.game.collectSound);
                 player.shieldActive = true;
                 player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 100);
                 player.displayHealth = player.currentHealth;
                 break;
             case 'power':
+                this.game.playSound(this.game.collectSound);
                 player.shieldActive = true;
-                player.currentMana = Math.min(player.maxMana, player.currentMana + 100);
+                player.currentMana = Math.min(player.maxMana, player.currentMana + 200);
                 player.displayMana = player.currentMana;
                 break;
             }
@@ -184,21 +189,26 @@ class ObstacleHandler {
             case 'mercury':
             case 'jupiter':
             case 'venus':
+                this.game.playSound(this.game.collisionSound);
                 damage = 100;
                 player.currentHealth -= damage;
                 shakeScreen(500);
                 break;
-            case 'blackHole':
+            case 'blackhole':
+                this.game.playSound(this.game.playerDieSound);
                 player.currentHealth = 0;
                 break;
             case 'health':
+                this.game.playSound(this.game.collectSound);
                 player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 100);
                 player.displayHealth = player.currentHealth;
                 break;
             case 'shield':
+                this.game.playSound(this.game.collectSound);
                 player.shieldActive = true;
                 break;
             case 'power':
+                this.game.playSound(this.game.collectSound);
                 player.currentMana = Math.min(player.maxMana, player.currentMana + 100);
                 player.displayMana = player.currentMana;
                 break;
@@ -221,12 +231,12 @@ class ObstacleHandler {
                 }
                 switch (type) {
                     case 'asteroid':
-                        if (obstacle.x + this.obstacleWidth < 0) {
+                        if (obstacle.x + obstacle.width < 0) {
                             obstacles.splice(index, 1);
                         }
                         break;
                     case 'missile':
-                        if (obstacle.x + this.obstacleWidth > gameCanvas.width) {
+                        if (obstacle.x + obstacle.width > gameCanvas.width) {
                             obstacles.splice(index, 1);
                         }
                         break;
@@ -238,7 +248,7 @@ class ObstacleHandler {
     drawObstacles() {
         this.obstacles.forEach((obstacle) => {
             this.gameCtx.save();
-            this.gameCtx.drawImage(obstacle.image, obstacle.x, obstacle.y, this.obstacleWidth, this.obstacleHeight);
+            this.gameCtx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             this.gameCtx.restore();
         });
     }
@@ -248,11 +258,11 @@ class ObstacleHandler {
             obstacles.forEach((obstacle) => {
                 this.gameCtx.save();
                 if(isMissile) {
-                    this.gameCtx.translate(obstacle.x + this.obstacleWidth / 2, obstacle.y + this.obstacleHeight / 2);
+                    this.gameCtx.translate(obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2);
                     this.gameCtx.rotate(Math.PI / 4);
-                    this.gameCtx.drawImage(obstacle.image, - this.obstacleWidth / 2, - this.obstacleHeight / 2, this.obstacleWidth, this.obstacleHeight);                
+                    this.gameCtx.drawImage(obstacle.image, - obstacle.width / 2, - obstacle.height / 2, obstacle.width, obstacle.height);                
                 } else {
-                    this.gameCtx.drawImage(obstacle.image, obstacle.x, obstacle.y, this.obstacleWidth, this.obstacleHeight);                
+                    this.gameCtx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);                
                 }
                 this.gameCtx.restore();
             });
@@ -263,7 +273,6 @@ class ObstacleHandler {
 
     createRandomObstacleColumn(gameTime) {
         //Position Obstacle
-        const minGap = this.obstacleWidth + this.obstacleGap;
         const getRandomYPosition =  (obstaclePositions, minGap, canvasHeight) => {
             let obstacleY;
             let isValidPosition = false;
@@ -280,7 +289,7 @@ class ObstacleHandler {
         }
 
         for (let i = 0; i < this.obstacleCount; i++) {
-            const obstacleY = getRandomYPosition(this.obstaclePositions, minGap, gameCanvas.height);
+            const obstacleY = getRandomYPosition(this.obstaclePositions, this.obstacleGap + this.obstacleHeight, gameCanvas.height);
             if (obstacleY !== null) {
                 this.obstaclePositions.push(obstacleY);
             }
@@ -294,6 +303,8 @@ class ObstacleHandler {
             this.obstacles.push({
                 x: gameCanvas.width,
                 y: this.obstaclePositions[i],
+                width: this.obstacleWidth,
+                height: this.obstacleHeight,
                 type: randomType.type,
                 image: randomType.image,
                 isColumn: i === this.obstaclePositions.length,
@@ -326,7 +337,7 @@ class ObstacleHandler {
             let attemps = 0;
     
             while (!isValidPosition && attemps < maxAttemps) { //1 bug fix 2days
-                obstacleY = Math.floor(Math.random() * (gameCanvas.height - this.obstacleWidth));
+                obstacleY = Math.floor(Math.random() * (gameCanvas.height - this.obstacleHeight));
                 isValidPosition = true;
                 
                 for (let obstacle of obstacles) {
@@ -343,6 +354,8 @@ class ObstacleHandler {
                         obstacles.push({
                             x: gameCanvas.width,
                             y: obstacleY,
+                            width: this.obstacleWidth,
+                            height: this.obstacleHeight,
                             speed: 720 + 144,
                             type: 'asteroid',
                             image: this.game.asteroidImage,
@@ -354,6 +367,8 @@ class ObstacleHandler {
                         obstacles.push({
                             x: - gameCanvas.width * 1.25,
                             y: obstacleY,
+                            width: this.obstacleWidth,
+                            height: this.obstacleHeight,
                             speed: 720 + 144,
                             type: 'missile',
                             image: this.game.missileImage,
@@ -398,7 +413,19 @@ class ObstacleHandler {
 
 class ObstacleNumberAndAlphabet extends ObstacleHandler {
     constructor(game, gameCtx) {
-        super(game, gameCtx);   
+        super(game, gameCtx); 
+        this.width = 90;
+        this.height = 90;
+        this.obstacleWidth = 76;
+        this.obstacleHeight = 76;
+
+        this.wrongSound = document.getElementById("wrong");  
+        this.correctSound = document.getElementById("correct");  
+    }
+
+    playSound(type) {
+        type.currentTime = 0;
+        type.play();
     }
   
     updateObstacles(gameTime, deltaTime) {
@@ -409,18 +436,14 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
         this.game.playerInGame.forEach((player) => {
             this.obstacles.forEach((obstacle, index) => {
                 if (this.checkCollision(player, obstacle)) {
-                    switch (obstacle.type) {
-                        case this.pickRandomArray[0].type:
+                    if (obstacle.type === this.pickRandomAlphabetArray[0].type) {
+                            this.playSound(this.correctSound);
                             this.game.scoreOverall++;
-                            this.pickRandomArray.splice(0, 1);
-                            break;
-                        case 'health':
-                            player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 100);
-                            break;
-                        default: 
-                            player.currentHealth -= 50;
-                            shakeScreen(500);
-                            break;
+                            this.pickRandomAlphabetArray.splice(0, 1);
+                    } else {
+                        this.playSound(this.wrongSound);
+                        player.currentHealth -= 50;
+                        shakeScreen(500);
                     }
                     this.obstacles.splice(index, 1);
                 }
@@ -431,15 +454,15 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
             });
         });
         // if(gameTime - this.timeUpdateRandom >= 10) {
-        //     this.pickRandomArray.splice(0, 1);
+        //     this.pickRandomAlphabetArray.splice(0, 1);
         //     this.timeUpdateRandom = gameTime;
         // }
     }
 
     increase() {
         this.alphabetAndNumber.forEach((letterOrNumber, index) => {
-            if(letterOrNumber.type == this.pickRandomArray[0].type) {
-                letterOrNumber.weight = 7;
+            if(letterOrNumber.type == this.pickRandomAlphabetArray[0].type) {
+                letterOrNumber.weight = 12;
             } else {
                 letterOrNumber.weight = 1;
             }
@@ -447,22 +470,23 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
     }
 
     drawObstacles() {
-        super.drawObstacles();
+        this.obstacles.forEach((obstacle) => {
+            this.gameCtx.save();
+            this.gameCtx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            this.gameCtx.restore();
+        });
         this.drawPickRandom();
     }
 
     updatePickRandom() {
-        if(this.pickRandomArray.length < 1) this.pickRandomArray.push(this.alphabetAndNumber[this.pickRandom()]);
+        if(this.pickRandomAlphabetArray.length < 1) this.pickRandomAlphabetArray.push(this.alphabetAndNumber[this.pickRandom()]);
     }
 
     drawPickRandom() {
-        if(this.pickRandomArray[0]){
+        if(this.pickRandomAlphabetArray[0]){
             this.gameCtx.save();
             this.gameCtx.drawImage(
-                this.pickRandomArray[0].image, 
-                gameCanvas.width - 80, 20, 
-                this.obstacleWidth, this.obstacleHeight
-            );
+            this.pickRandomAlphabetArray[0].image, gameCanvas.width / 2 - this.height / 2, 20, this.width, this.height);
             this.gameCtx.restore();
         }
     }
@@ -470,19 +494,22 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
     pickRandom() {
         return Math.floor(Math.random() * this.alphabetAndNumber.length);
     }
-  
+
+
     pushObstacle() {
         this.createRandomObstacleColumn();
         for (let i = 0; i <= this.obstaclePositions.length; i++) {
             const randomType = this.getRandomObstacleType(this.alphabetAndNumber);
-            const weight = (randomType.type === this.pickRandomArray[0]?.type) ? 5 : randomType.weight;
+            const weight = (randomType.type === this.pickRandomAlphabetArray[0]?.type) ? 5 : randomType.weight;
             this.obstacles.push({
                 x: gameCanvas.width,
                 y: this.obstaclePositions[i],
+                width: this.obstacleWidth,
+                height: this.obstacleHeight,
                 type: randomType.type,
                 image: randomType.image,
                 direction: -1,
-                speed: 288,
+                speed: 200,
                 weight: weight
             });
         }
@@ -504,6 +531,9 @@ class Enemy {
         this.maxHealth;
         this.currentHealth = this.maxHealth;
         this.displayHealth = this.maxHealth;
+        this.timeInterval = 60;
+        this.timeStart = 32;
+        this.timeEnd = 57
     }
 
     isColliding(player, type) {
@@ -525,7 +555,7 @@ class Enemy {
     }
 
     isTime(gameTime) {
-        return gameTime % TIMEINTERVAL > TIME_START && gameTime % TIMEINTERVAL < TIME_END;
+        return gameTime % this.timeInterval > this.timeStart && gameTime % this.timeInterval < this.timeEnd;
     }
 
     update(gameTime, deltaTime) {
@@ -547,30 +577,47 @@ class BOSS extends Enemy {
         this.speed = 120;
         this.targetY = this.y;
         this.direction = 1;
-        this.timeShoot = 0;
+
         this.lasers = [];
+        this.fires = [];
+        this.snows = [];
+
         this.currentTime = 0;
-        this.smallLaserInterval = 1.2;
+        this.smallLaserInterval = 1;
         this.maxLasers = 5;
 
-        this.maxHealth = 20000;
-        this.currentHealth = this.maxHealth;
-        this.displayHealth = this.maxHealth;
+        this.positionActive = null;
+        this.angleSmallLaser = null;
+        
     }
 
     createLasers(gameTime) {
         if (gameTime - this.currentTime >= this.smallLaserInterval) {
             this.currentTime = gameTime;
-            for(let i = 1; i <= this.maxLasers; i++) {
+            this.game.playSound(this.game.shoot);
+            for(let i = 1; i <= 1; i++) {
                 const laser = new SmallLaser(this.game, this.gameCtx, this.x, this.y + this.height / 2, 0); 
                 this.lasers.push(laser);
             }
         }
     }
 
+    createLasersFan(gameTime) {
+        if (gameTime - this.currentTime >= this.smallLaserInterval) {
+            this.angleSmallLaser = -30;
+            this.currentTime = gameTime;
+            this.game.playSound(this.game.shoot);
+            for(let i = 1; i <= this.maxLasers; i++) {
+                const laser = new SmallLaser(this.game, this.gameCtx, this.x, this.y + this.height / 2, (Math.PI * this.angleSmallLaser) / 180); // 0 degrees
+                this.lasers.push(laser);
+                this.angleSmallLaser += 15;
+            }
+        }
+    }
+
     updateSmallLaser(deltaTime) {
         this.lasers.forEach((laser, index) => {
-            laser.update(deltaTime);
+            laser.update(deltaTime);    
             if(laser.x + laser.width < 0) {
                 this.lasers.splice(index, 1);
             }
@@ -582,24 +629,26 @@ class BOSS extends Enemy {
         this.largeLaser.height = 20;
     }
 
-    timeLargeLaserActive(gameTime) {
-        return gameTime % TIMEINTERVAL > 45 && gameTime % TIMEINTERVAL < 50;
-    }
-
-    timeSmallLaserActive(gameTime) {     
-        return (gameTime % TIMEINTERVAL > 35 && gameTime % TIMEINTERVAL < 42) || (gameTime % TIMEINTERVAL > 50 && gameTime % TIMEINTERVAL < 57);    
-    }
-
-    checkCollisionSmallLaser() {
+    checkCollisionType(types, typeName) {
         this.game.playerInGame.forEach((player) => {
-            this.lasers.forEach((smallLaser, index) => {
-                if(this.isColliding(player, smallLaser)) {
+            types.forEach((type, index) => {
+                if(this.isColliding(player, type)) {
                     if (player.shieldActive) {
                         player.shieldActive = false;
-                        this.lasers.splice(index, 1);
+                        types.splice(index, 1);
                     } else {
-                        player.currentHealth -= 100;
-                        this.lasers.splice(index, 1);
+                        switch (typeName) {
+                            case "smallLaser": 
+                                player.currentHealth -= 100;
+                                break;
+                            case "fire":
+                                player.currentHealth -= 40;
+                                break;
+                            case "snow":
+                                player.currentHealth -= 30;
+                                break;
+                        }
+                        types.splice(index, 1);
                     }
                 }
             });
@@ -618,48 +667,42 @@ class BOSS extends Enemy {
             });
     }
 
-    update(gameTime, deltaTime) {
-        super.update(gameTime, deltaTime);
-
-        if(this.displayHealth > this.currentHealth) {
-            this.displayHealth -= 50;
-        } else {
-            this.displayHealth = this.currentHealth;
-        }
-
-        if(this.currentHealth <= 0) {
-            this.y += 200 * deltaTime;
-            return;
-        }
-        
-        const positionActive = this.x <= gameCanvas.width * (4 / 6);
-        if(this.isTimeActive && !positionActive) {
+    updatePositionX(gameTime, deltaTime) {
+        this.positionActive = this.x <= gameCanvas.width * (4 / 6);
+        if(this.isTimeActive && !this.positionActive) {
             this.x -= this.speed * deltaTime;
             return;
         }
+    }
 
-        if(positionActive) {
-            if (Math.abs(this.y - this.targetY) <= 1) {
-                this.targetY = Math.random() * (gameCanvas.height - this.height);
-            }
-            this.direction = this.targetY < this.y ? -1 : 1;              
-            this.y += this.direction * this.speed * deltaTime;
-            if (this.y + this.height > gameCanvas.height) {
-                this.y = gameCanvas.height - this.height;
-            } 
-
-            if(this.timeLargeLaserActive(gameTime)) {
-                this.updatePositionLargeLaser();
-                this.checkCollisionLargeLaser();
-                this.lasers = [];
-            }
-            if(this.timeSmallLaserActive(gameTime)) {
-                this.createLasers(gameTime);
-            }
-            this.checkCollisionLargeLaserOfPlayer();
+    updatePositionY (deltaTime) {
+        if (Math.abs(this.y - this.targetY) <= 1) {
+            this.targetY = Math.random() * (gameCanvas.height - this.height);
         }
-        this.updateSmallLaser(deltaTime);
-        this.checkCollisionSmallLaser();
+        this.direction = this.targetY < this.y ? -1 : 1;              
+        this.y += this.direction * this.speed * deltaTime;
+        if (this.y + this.height > gameCanvas.height) {
+            this.y = gameCanvas.height - this.height;
+        } 
+    }
+
+    timeLargeLaser(gameTime) {
+        if(this.timeLargeLaserActive(gameTime)) {
+            this.updatePositionLargeLaser();
+            this.checkCollisionLargeLaser();
+            this.lasers = [];
+        }
+    }
+
+    timeSmallLaser(gameTime) {
+        if(this.timeSmallLaserActive(gameTime)) {
+            this.createLasers(gameTime, this.angleSmallLaser);
+        }
+    }
+
+    update(gameTime, deltaTime) {
+        super.update(gameTime, deltaTime);
+        this.updatePositionX(gameTime, deltaTime);
     }
 
     draw(gameTime) {
@@ -670,6 +713,7 @@ class BOSS extends Enemy {
         this.lasers.forEach((laser) => {
             laser.draw( "#ff1818", "#fff");
         });
+
         this.gameCtx.save();
         this.gameCtx.drawImage(this.image, this.x, this.y, this.width, this.height);
         this.gameCtx.restore();
@@ -698,35 +742,186 @@ class BOSS extends Enemy {
         this.targetY = this.y;
         this.direction = 1;
         this.lasers = [];
+        this.fires = [];
+        this.snows = [];
         this.currentTime = 0;
+        this.positionActive = null;
+        this.angleSmallLaser = null;
+    }
+}
+
+class BOSSMEDIUM extends BOSS {
+    constructor(game, ctx) {
+        super(game, ctx);
+    }
+
+    timeLargeLaserActive(gameTime) {
+        return gameTime % this.timeInterval > 45 && gameTime % this.timeInterval < 50;
+    }
+
+    timeSmallLaserActive(gameTime) {     
+        return (gameTime % this.timeInterval > 35 && gameTime % this.timeInterval < 42) || (gameTime % this.timeInterval > 52 && gameTime % this.timeInterval < 57);    
+    }
+
+    update(gameTime, deltaTime) {
+        super.update(gameTime, deltaTime);
+
+        if(this.positionActive) {
+            this.updatePositionY(deltaTime);
+            this.timeLargeLaser(gameTime);
+            this.timeSmallLaser(gameTime)
+            this.checkCollisionLargeLaserOfPlayer();
+        }
+        this.updateSmallLaser(deltaTime);
+        this.checkCollisionType(this.lasers, "smallLaser");
     }
 }
 
 class BOSSHARD extends BOSS {
     constructor(game, ctx) {
         super(game, ctx);
+        this.timeInterval = 90;
+        this.timeStart = 32;
+        this.timeEnd = 87;
+
+        this.maxHealth = 50000;
+        this.currentHealth = this.maxHealth;
+        this.displayHealth = this.maxHealth;
+
+        this.fireInterval = 1;
+        this.fireTime = 0;
+        this.snowInterval = 1.4;
+        this.snowTime = 0;
     }
 
-    createLasers(gameTime) {
-        if (gameTime - this.currentTime >= this.smallLaserInterval) {
-            let angle = -30;
-            this.currentTime = gameTime;
+    updateFireAndSnow(deltaTime, types) {
+        types.forEach((type, index) => {
+            type.update(deltaTime);
+            if(type.x + type.width < 0) {
+                types.splice(index, 1);
+            }
+        });
+    }
+
+    timeLargeLaser(gameTime) {
+        if(this.timeLargeLaserActive(gameTime)) {
+            this.updatePositionLargeLaser();
+            this.checkCollisionLargeLaser();
+            this.lasers = [];
+            this.fires = [];
+            this.snows = []; 
+        }
+    }
+
+    timeLargeLaserActive(gameTime) {
+        return gameTime % this.timeInterval > 57 && gameTime % this.timeInterval < 65;
+    }
+
+    timeSmallLaserActive(gameTime) {     
+        return (gameTime % this.timeInterval > 35 && gameTime % this.timeInterval < 45);    
+    }
+
+    timeSmallLaserFanActive(gameTime) {
+        return gameTime % this.timeInterval > 47 && gameTime % this.timeInterval < 55;
+    }
+
+    timeFireAndSnowActive(gameTime) {
+        return gameTime % this.timeInterval > 67 && gameTime % this.timeInterval < 85;
+    }
+
+    createFireFan(gameTime) {
+        if (gameTime - this.fireTime >= this.fireInterval) {
+            this.angleSmallLaser = -40;
+            this.fireTime = gameTime;
+            this.game.playSound(this.game.fireAndSnowSound);
             for(let i = 1; i <= this.maxLasers; i++) {
-                const laser = new SmallLaser(this.game, this.gameCtx, this.x, this.y + this.height / 2, (Math.PI * angle) / 180); // 0 degrees
-                this.lasers.push(laser);
-                angle += 15;
+                const laser = new Fireball(this.game, this.gameCtx, this.x, this.y + this.height / 2, (Math.PI * this.angleSmallLaser) / 180); 
+                this.fires.push(laser);
+                this.angleSmallLaser += 20;
             }
         }
     }
 
+    createSnowFan(gameTime) {
+        if (gameTime - this.snowTime >= this.snowInterval) {
+            this.angleSmallLaser = -50;
+            this.snowTime = gameTime;
+            this.game.playSound(this.game.fireAndSnowSound);
+            for(let i = 1; i <= this.maxLasers; i++) {
+                const laser = new SnowBall(this.game, this.gameCtx, this.x, this.y + this.height / 2, (Math.PI * this.angleSmallLaser) / 180); 
+                this.snows.push(laser);
+                this.angleSmallLaser += 25;
+            }
+        }
+    }
+
+    timeSmallLaserFan(gameTime) {
+        if(this.timeSmallLaserFanActive(gameTime)) {
+            this.createLasersFan(gameTime, this.angleSmallLaser);
+        }
+    }
+
+    timeFire(gameTime) {
+        if(this.timeFireAndSnowActive(gameTime)) {
+            this.createFireFan(gameTime, this.angleSmallLaser);
+        }
+    }
+
+    timeSnow(gameTime) {
+        if(this.timeFireAndSnowActive(gameTime)) {
+            this.createSnowFan(gameTime, this.angleSmallLaser);
+        }
+    }
+
+    update(gameTime, deltaTime) {
+        super.update(gameTime, deltaTime);
+
+        if(this.displayHealth > this.currentHealth) {
+            this.displayHealth -= 50;
+        } else {
+            this.displayHealth = this.currentHealth;
+        }
+
+        if(this.currentHealth <= 0) {
+            this.y += 200 * deltaTime;
+            return;
+        }
+
+        if(this.positionActive) {
+            this.updatePositionY(deltaTime);
+            this.timeLargeLaser(gameTime);
+            this.timeSmallLaser(gameTime);
+            this.timeSmallLaserFan(gameTime);
+            this.timeFire(gameTime);
+            this.timeSnow(gameTime);
+            this.checkCollisionLargeLaserOfPlayer();
+        }
+        this.updateFireAndSnow(deltaTime, this.fires);
+        this.updateFireAndSnow(deltaTime, this.snows);
+        this.updateSmallLaser(deltaTime);
+        this.checkCollisionType(this.lasers, "smallLaser");
+        this.checkCollisionType(this.fires, "fire");
+        this.checkCollisionType(this.snows, "snow");
+    }
+
     draw(gameTime, healthX, healthY) {
         super.draw(gameTime);
+        this.fires.forEach((fire) => {
+            fire.draw();
+        });
+        this.snows.forEach((snow) => {
+            snow.draw();
+        });
         if(this.isTimeActive) {
             this.drawHealth(healthX, healthY);
         }
     }
-}
 
+    reset() {
+        super.reset();
+        this.currentHealth = this.maxHealth;
+    }
+}
 
 class BOSSSMALL extends Enemy {
     constructor(game, ctx, y) {
@@ -735,13 +930,14 @@ class BOSSSMALL extends Enemy {
         this.speed = 90;
         this.y = y;
 
-        this.maxHealth = 5000;
+        this.maxHealth = 10000;
         this.currentHealth = this.maxHealth;
         this.displayHealth = this.maxHealth;
     }
 
     timeLargeLaserActive(gameTime) {
-        return gameTime % 60 >= 50 && gameTime % 60 <= 55;
+        return gameTime % this.game.boss[0].timeInterval >= 50 && gameTime % this.game.boss[0].timeInterval <= 55
+        || gameTime % this.game.boss[0].timeInterval >= 65 && gameTime % this.game.boss[0].timeInterval <= 69;
     }
 
     checkCollision() {
@@ -810,9 +1006,23 @@ class BOSSSMALL extends Enemy {
     }
 }
 
+class BOSSSMALLMEDIUM extends BOSSSMALL {
+    constructor(game, ctx, y) {
+        super(game, ctx);
+    }
+    
+    timeLargeLaserActive(gameTime) {
+        return gameTime % this.game.boss[0].timeInterval >= 45 && gameTime % this.game.boss[0].timeInterval <= 50
+    }
+}
+
 class BOSSSMALLHARD extends BOSSSMALL {
     constructor(game, ctx, y) {
         super(game, ctx);
+
+        this.timeInterval = 90;
+        this.timeStart = 32;
+        this.timeEnd = 87;
     }
 
     draw(gameTime, healthX, healthY, y) {
@@ -820,6 +1030,11 @@ class BOSSSMALLHARD extends BOSSSMALL {
         if(this.isTimeActive) {
             this.drawHealth(healthX, healthY, y);
         }
+    }
+
+    reset() {
+        super.reset();
+        this.currentHealth = this.maxHealth;
     }
 }
 
@@ -871,6 +1086,42 @@ class SmallLaser extends Laser {
     }
 }
 
+class Fireball extends SmallLaser {
+    constructor(game, ctx, x, y, angle) {
+        super(game, ctx, x, y, angle);
+        this.width = 100;
+        this.height = 60;
+        this.image = this.game.fireImage;
+    }
+    
+    draw() {
+        this.gameCtx.save();
+        this.gameCtx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        this.gameCtx.rotate(this.angle);
+        this.gameCtx.drawImage(this.image, - this.width / 2, - this.height / 2, this.width / 2, this.height /2);
+        this.gameCtx.translate(this.x, this.y);
+        this.gameCtx.restore();
+    }
+}
+
+class SnowBall extends SmallLaser {
+    constructor(game, ctx, x, y, angle) {
+        super(game, ctx, x, y, angle);
+        this.width = 100;
+        this.height = 60;
+        this.image = this.game.snowImage;
+    }
+
+    draw() {
+        this.gameCtx.save();
+        this.gameCtx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        this.gameCtx.rotate(this.angle);
+        this.gameCtx.drawImage(this.image, - this.width / 2, - this.height / 2, this.width / 2, this.height /2);
+        this.gameCtx.translate(this.x, this.y);
+        this.gameCtx.restore();
+    }
+}
+
 class LargeLaser extends Laser {
     constructor(game, ctx) {  
         super(game, ctx);
@@ -881,7 +1132,7 @@ class LargeLaser extends Laser {
     }
 
     draw(BorderColor, MainColor) {
-        if(this.y <= 0) {
+        if(this.y <= this.height) {
             return;
         }
         
@@ -896,7 +1147,7 @@ class LargeLaser extends Laser {
     }
 }
 
-export { BOSS, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser, ObstacleNumberAndAlphabet, BOSSHARD, BOSSSMALLHARD };
+export { BOSSMEDIUM, BOSSSMALL, ObstacleHandler, SmallLaser, LargeLaser, ObstacleNumberAndAlphabet, BOSSHARD, BOSSSMALLHARD, BOSSSMALLMEDIUM };
 
 // Luu diem so nguoi choi
 // Sua time

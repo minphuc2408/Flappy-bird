@@ -1,15 +1,42 @@
 
-import { GameHard ,GameMedium, GameEasy, GameChild, Game } from './Game.js';
+import { GameHard ,GameMedium, GameEasy, GameChild, Game, GameChildEasy } from './Game.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
-
-window.addEventListener('load', function () {
-    const levelGame = [new GameChild(), new GameEasy(), new GameMedium(), new GameHard()];
-    let game = new Game();
-
+function updateSize () {
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", () => {
+    updateSize();
+});
+
+window.addEventListener('load', function () {
+    gameCanvas.width = window.innerWidth;
+    gameCanvas.height = window.innerHeight;
+    
+    const soundApp = document.getElementById("app");
+    const clickSound = document.getElementById("click");
+    const on = document.querySelector(".on");
+    const off = document.querySelector(".off");
+
+    function playSound(sound) {
+        sound.currentTime = 0;
+        sound.play();
+    }
+
+    soundApp.addEventListener("ended", function () {
+        soundApp.currentTime = 0;
+        soundApp.play();
+    });
+
+    window.onclick = () => {
+        playSound(clickSound);
+    }
+
+    const levelGame = [new GameChild(), new GameEasy(), new GameMedium(), new GameHard()];
+    let game = new Game();
 
     const startGame = document.querySelector(".btn-start-game");
     const header = document.querySelector(".header");
@@ -23,7 +50,11 @@ window.addEventListener('load', function () {
     const secondList = document.querySelector('.second');
     const thirdList = document.querySelector('.third');
     const fourthList = document.querySelector('.fourth');
-
+    
+    const selectMode = document.querySelector(".select-mode");
+    const selectModeChild = document.querySelectorAll(".select-mode-game");
+    const modeChild = this.document.querySelector(".mode-child");
+    const modeChilds = document.querySelectorAll(".mode-child-game");
     const handgesture = document.getElementById("handgesture");
     const keyboard = document.getElementById("keyboard");
 
@@ -32,14 +63,58 @@ window.addEventListener('load', function () {
 
     const buttonPlayer = document.querySelector(".tutorial .button-player:last-of-type");
     
+    off.onclick = function (e) {
+        game.sound.play();
+        off.classList.add("hidden");
+        on.classList.remove("hidden");
+        e.stopPropagation();
+    };
+    on.onclick = function (e) {
+        game.sound.pause();
+        off.classList.remove("hidden");
+        on.classList.add("hidden");
+        e.stopPropagation();
+    };
+
     startGame.onclick = () => {
+        soundApp.play();
         header.classList.replace("visible", "hidden");
         tutorial.classList.replace("hidden", "visible");
     };
 
+    selectModeChild.forEach((select, index) => {
+        select.onclick = () => {
+            switch (index + 1) {
+                case 1: 
+                    selectMode.classList.add("hidden");
+                    modeChild.classList.remove("hidden");
+                    break;
+                case 2:
+                    selectMode.classList.add("hidden");
+                    choicePlayer.classList.remove("hidden");
+                    break;
+            }
+        }
+    });
+
+    modeChilds.forEach((mode, index) => {
+        mode.onclick = function (e) {
+            switch (index + 1) {
+                case 1: 
+                    game = levelGame[0];
+                    modeChild.classList.add("hidden");
+                    document.querySelector(".tutorial .button-player").classList.remove("hidden");
+                    break;
+                case 2:
+                case 3:
+                    break;
+            }
+        }
+    });
+
     choiceLevel.forEach((level, index) => {
         level.onclick = function () {
-            game = levelGame[index];
+            game = levelGame[index + 1];
             choicePlayer.classList.add("hidden");
             document.querySelector(".tutorial .button-player").classList.remove("hidden");
         }
@@ -49,6 +124,7 @@ window.addEventListener('load', function () {
         document.querySelector(".tutorial .button-player").classList.add("hidden");
         tutorial.classList.replace("visible", "hidden");
         gameflabird.classList.replace("hidden", "visible");
+        soundApp.pause();
         game.udpatePlayerHandgestrue();
         game.reset();
         game.handgesture.start();
@@ -63,6 +139,7 @@ window.addEventListener('load', function () {
         key.onclick = function () {
             tutorial.classList.replace("visible", "hidden");
             gameflabird.classList.replace("hidden", "visible");
+            soundApp.pause();
             game.updatePlayers(index + 1);
             game.reset();
         }
@@ -71,7 +148,7 @@ window.addEventListener('load', function () {
     const arrayList = [firstList, secondList, thirdList, fourthList];
     let currentIndex = 0;
     btnNext.onclick = () => {
-        if(currentIndex < arrayList.length - 1 && currentIndex <= 1) {
+        if(currentIndex < arrayList.length - 1) {
             arrayList[currentIndex].classList.replace("visible", "notvisibility");
             arrayList[currentIndex + 1].classList.replace("notvisibility", "visible");
             currentIndex++;
@@ -98,7 +175,7 @@ window.addEventListener('load', function () {
             if(e.code === "Enter") {
                 game.startTime = performance.now();
                 game.isGameStarted = true;
-            }  
+            } 
             if(e.code === "KeyP") {
                 game.pause = true;
                 game.pauseTime = performance.now();
@@ -115,10 +192,9 @@ window.addEventListener('load', function () {
                     player.pressed = true;
                 }
                 if(e.code === keyshoot && (game === levelGame[3])) {
+                    game.playSound(game.playerShootSound);
                     player.checkShoot = true;
                 }
-
-                // console.log(e.code);
             }
         });
     });
@@ -135,19 +211,6 @@ window.addEventListener('load', function () {
                 player.checkShoot = false;
             }
         });
-    });
-    //Demo mobile
-    gameflabird.onclick = () => {
-        if(!game.hasTouch) {
-            game.hasTouch = true;
-            game.startTime = performance.now();
-            game.isGameStarted = true;
-            game.render();
-        }
-    };
-    
-    gameflabird.addEventListener('touchstart', function(event) {
-        if(game.players[0].currentHealth > 0) game.players[0].flap();
     });
 
     let lastTime = 0;
