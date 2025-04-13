@@ -12,7 +12,7 @@ class ObstacleHandler {
         this.obstaclesInterval = 1;
         this.obstacleGap = 150;
         this.framesSinceLastObstacle = 0;
-        this.obstacleCount = 4;
+        this.obstacleCount = 2;
 
         this.timeUpdateRandom = 0;
         this.weightRandom = 1;
@@ -414,8 +414,8 @@ class ObstacleHandler {
 class ObstacleNumberAndAlphabet extends ObstacleHandler {
     constructor(game, gameCtx) {
         super(game, gameCtx); 
-        this.width = 90;
-        this.height = 90;
+        this.width = 120;
+        this.height = 120;
         this.obstacleWidth = 76;
         this.obstacleHeight = 76;
 
@@ -453,16 +453,12 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
                 }
             });
         });
-        // if(gameTime - this.timeUpdateRandom >= 10) {
-        //     this.pickRandomAlphabetArray.splice(0, 1);
-        //     this.timeUpdateRandom = gameTime;
-        // }
     }
 
     increase() {
         this.alphabetAndNumber.forEach((letterOrNumber, index) => {
             if(letterOrNumber.type == this.pickRandomAlphabetArray[0].type) {
-                letterOrNumber.weight = 12;
+                letterOrNumber.weight = 15;
             } else {
                 letterOrNumber.weight = 1;
             }

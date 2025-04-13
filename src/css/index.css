@@ -162,7 +162,6 @@ h1, .tutorial__heading {
 .mt-auto {
   margin-top: auto;
 }
-
 .hidden {
   display: none;
 }
@@ -250,7 +249,7 @@ h1, .tutorial__heading {
   align-items: center;
 }
 
-.button-player, .choice-player, .select-mode, .mode-child {
+.button-player, .choice-player, .select-mode, .mode-child, .demo-player {
   position: absolute;
   bottom: 5%;
 }
@@ -542,6 +541,48 @@ h1, .tutorial__heading {
   font-weight: bold;
   border-radius: 0.3125rem;
   animation: fadeInOut 2s;
+}
+
+/* Back to menu button */
+.back-to-menu {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.back-to-menu:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.back-to-menu span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Top left back button */
+.top-left-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    margin: 0;
+    min-width: 100px;
+    height: 50px;
+    z-index: 10;
+}
+
+.top-left-back::before, .top-left-back::after {
+    width: 50%;
+    height: 50%;
 }
 
 /*# sourceMappingURL=index.css.map */

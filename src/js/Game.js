@@ -269,7 +269,7 @@ class GameChild extends Game {
         super.update(gameTime, deltaTime);
         this.obstacleNumberAndAlphabet.updateObstacles(gameTime, deltaTime);
         this.obstacleNumberAndAlphabet.framesSinceLastObstacle += deltaTime;
-        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.7) {
+        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  2) {
             this.obstacleNumberAndAlphabet.pushObstacle(gameTime);
             this.obstacleNumberAndAlphabet.framesSinceLastObstacle = 0;
         }
@@ -291,16 +291,7 @@ class GameChild extends Game {
 class GameChildEasy extends GameChild {
     constructor() {
         super("GameChild");
-    }
-
-    update(gameTime, deltaTime) {
-        super.update(gameTime, deltaTime);
-        this.obstacleNumberAndAlphabet.updateObstacles(gameTime, deltaTime);
-        this.obstacleNumberAndAlphabet.framesSinceLastObstacle += deltaTime;
-        if( this.obstacleNumberAndAlphabet.framesSinceLastObstacle >=  1.7) {
-            this.obstacleNumberAndAlphabet.pushObstacle(gameTime);
-            this.obstacleNumberAndAlphabet.framesSinceLastObstacle = 0;
-        }
+        
     }
 }
 
