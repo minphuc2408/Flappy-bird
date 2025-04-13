@@ -1,4 +1,3 @@
-
 import { GameHard ,GameMedium, GameEasy, GameChild, Game, GameChildEasy } from './Game.js';
 
 const gameCanvas = document.getElementById("gameCanvas");

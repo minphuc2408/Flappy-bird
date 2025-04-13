@@ -1,0 +1,15 @@
+// 640px 1024px 1200px
+$breakpoints-up: (
+    "Mobile": 30em,
+    "Tablet": 48em,
+    "Desktop": 62em,
+    "Huge": 80em,
+);
+
+$breakpoints-down: (
+    "Mobile": 29.98375em,
+    "Tablet": 47.99875em,
+    "Desktop": 61.99875em,
+    "Huge": 79.99875em,
+);
+

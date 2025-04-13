@@ -1,0 +1,82 @@
+@use "../util/functions" as f;
+
+.flex { display: flex; }
+.jc-flex-start { justify-content: flex-start; }
+.jc-flex-end { justify-content: flex-end; }
+.jc-center { justify-content: center; }
+.jc-space-between { justify-content: space-between; }
+.jc-space-around { justify-content: space-around; }
+.jc-space-evenly { justify-content: space-evenly; }
+.ai-center { align-items: center; }
+.ai-flex-end { align-items: flex-end; }
+.pore { position: relative; }
+.poab { position: absolute; }
+.text-center { text-align: center; }
+.flex-auto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-col-auto {
+    @extend .flex-col;
+    justify-content: center;
+    align-items: center;
+}
+
+.ml-auto { margin-left: auto; }
+.mr-auto { margin-right: auto; }
+.mx-auto { margin-inline: auto; }
+.mt-auto { margin-top: auto; }
+
+.hidden { display: none; }
+.visible { pointer-events: auto; display: block; }
+.notvisibility { pointer-events: none; visibility: hidden; }
+
+
+
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan; }
+    50% { text-shadow: 0 0 30px white, 0 0 40px magenta, 0 0 60px cyan; }
+    100% { text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan; }
+}
+
+@keyframes growup {
+    0% {
+        transform:  scale(1);
+    }
+    50% {
+        transform:  scale(1.06);
+    }
+    100% {
+        transform:  scale(1);
+    }
+    
+}
+
+@keyframes rotate-earth {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+

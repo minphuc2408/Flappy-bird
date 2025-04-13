@@ -1,0 +1,32 @@
+@use "../util/functions" as f;
+
+// =============== ICON =============== //
+$icon-size: (
+    "12": f.rem(12),
+    "14": f.rem(14),
+    "16": f.rem(16),
+    "20": f.rem(20),
+    "24": f.rem(24),
+    "48": f.rem(48),
+);
+
+@each $name, $size in $icon-size {
+    .icon-#{$name} {
+        font-size: $size;
+        height: $size;
+    }
+}
+
+.on, .off {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 36px;
+    height: 36px;
+    color: var(--white);
+    border: none;
+    background-color: transparent;
+    z-index: 2;
+    cursor: pointer;
+
+}

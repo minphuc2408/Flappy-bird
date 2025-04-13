@@ -1,0 +1,16 @@
+@use "../util/functions" as *;
+@use "../global/decoration" as *;
+
+.earth {
+    width: rem(1000);
+    height: rem(1000);
+    background-image: url(/demo/src/assets/imgs/earth.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    bottom: -130%;
+    animation: rotate-earth 32s infinite linear;
+}

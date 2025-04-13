@@ -1,0 +1,91 @@
+@use "../util/functions" as *;
+
+/* ========= GameCanvas ========== */
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+.game-over-container, .pause-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%); */
+    color: white;
+    animation: fadeIn 2s;
+    background-size: cover;
+}
+
+.game-over-title, .pause-title {
+    font-size: rem(64);
+    text-shadow: 0 0 rem(20) white, 0 0 rem(30) magenta, 0 0 rem(40) cyan;
+    margin-bottom: rem(20);
+    animation: pulse 2s infinite;
+}
+
+.button-container {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.restart-btn, .continue-btn {
+    padding: rem(15) rem(30);
+    font-size: rem(20);
+    background: linear-gradient(45deg, #ff6ec4, #7873f5);
+    border: none;
+    border-radius: rem(10);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.5s;
+    margin: rem(10); /* Thêm khoảng cách giữa các nút */
+}
+
+.restart-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #6ee2ff, #6454f0);
+}
+
+.score-text, .resume-text {
+    color: #FFD700; /* Màu vàng sáng */
+    font-size: rem(30);
+    margin-bottom: rem(20);
+}
+
+.play-again-text {
+    color: #ff6666; /* Màu đỏ nhạt */
+    font-size: rem(30);
+    margin-bottom: rem(20);
+}
+
+#handCanvas {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+}
+
+#video {
+    z-index: 0;
+}
+
+/* CSS cho cảnh báo tên lửa */
+.missile-warning {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    padding: rem(10) rem(20);
+    background-color: red;
+    color: white;
+    font-size: rem(20);
+    font-weight: bold;
+    border-radius: rem(5);
+    animation: fadeInOut 2s;
+}

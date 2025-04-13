@@ -1,0 +1,30 @@
+@use "../util/functions" as f;
+@use "../util/mixin" as m;
+@use "sass:map";
+
+:root {
+  
+  --lh-150: 150%;
+  --lh-130: 130%;
+  --lh-120: 120%;
+  --lh-100: 100%;
+
+  --fw-400: 400;
+  --fw-500: 500;
+  --fw-600: 600;
+}
+
+h1, .tutorial__heading {
+  position: absolute;
+  top: 15%;
+  text-align: center;
+  text-shadow: 0 0 f.rem(20) white, 0 0 f.rem(30) magenta, 0 0 f.rem(40) cyan;
+  animation: pulse 2s infinite;
+  color: #FFF;
+  font-size: f.rem(70);
+}
+
+.tutorial__heading {
+  top: 5%;
+  font-size: f.rem(52);
+}

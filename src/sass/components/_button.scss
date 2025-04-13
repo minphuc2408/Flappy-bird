@@ -1,0 +1,86 @@
+@use "../util/functions" as *;
+@use "../global/variables" as *;
+
+.button-player, .choice-player, .select-mode, .mode-child {
+    position: absolute;
+    bottom: 5%;
+}
+
+.btn {
+    margin: 0 rem(30);
+    padding: rem(10) rem(16);
+    font-size: rem(22);
+    font-weight: bold;
+    min-width: var(--width-button);
+    height: var(--height-button);
+    color: var(--white);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    /* background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(135deg, magenta, cyan); */
+    animation: growup 2s infinite ;
+}
+
+.select-mode-game {
+    min-width: var(--width-select-mode-game);
+}
+
+.btn-tutorial {
+    margin: 0 rem(20);
+    padding: rem(10);
+    min-width: rem(44);
+    height: rem(86);
+    svg {
+        fill: transparent;
+    }
+}
+
+.back {
+    font-size: rem(40);
+}
+
+.btn-back {
+    z-index: 2;
+    position: absolute;
+    top: rem(10);
+    left: rem(10);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-next {
+    margin-left: auto;
+}
+
+.btn-start-game {
+    position: absolute;
+    bottom: 10%;
+}
+
+.btn-play, .btn-start-game {
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--width-border-button);
+        height: var(--height-border-button);
+        border-top: rem(2) solid var(--white);
+        border-left: rem(2) solid var(--white);
+    }
+    
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: var(--width-border-button);
+        height: var(--height-border-button);
+        border-bottom: rem(2) solid var(--white);
+        border-right: rem(2) solid var(--white);
+    }
+}
+

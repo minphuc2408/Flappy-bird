@@ -1,0 +1,15 @@
+@use "../util/" as u;
+
+.container {
+    width: min(100% - 50px, u.rem(1320));
+    margin-inline: auto;
+
+    &.has-padding {
+        padding-block: 40px;
+    }
+}
+
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}

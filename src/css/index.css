@@ -1,0 +1,547 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+*, *::after, *::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-ubuntu);
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  border: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+:root {
+  --font-ubuntu: "Poppins", san-serif;
+}
+
+:root {
+  --lh-150: 150%;
+  --lh-130: 130%;
+  --lh-120: 120%;
+  --lh-100: 100%;
+  --fw-400: 400;
+  --fw-500: 500;
+  --fw-600: 600;
+}
+
+h1, .tutorial__heading {
+  position: absolute;
+  top: 15%;
+  text-align: center;
+  text-shadow: 0 0 1.25rem white, 0 0 1.875rem magenta, 0 0 2.5rem cyan;
+  animation: pulse 2s infinite;
+  color: #FFF;
+  font-size: 4.375rem;
+}
+
+.tutorial__heading {
+  top: 5%;
+  font-size: 3.25rem;
+}
+
+.container {
+  width: min(100% - 50px, 82.5rem);
+  margin-inline: auto;
+}
+.container.has-padding {
+  padding-block: 40px;
+}
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex {
+  display: flex;
+}
+
+.jc-flex-start {
+  justify-content: flex-start;
+}
+
+.jc-flex-end {
+  justify-content: flex-end;
+}
+
+.jc-center {
+  justify-content: center;
+}
+
+.jc-space-between {
+  justify-content: space-between;
+}
+
+.jc-space-around {
+  justify-content: space-around;
+}
+
+.jc-space-evenly {
+  justify-content: space-evenly;
+}
+
+.ai-center {
+  align-items: center;
+}
+
+.ai-flex-end {
+  align-items: flex-end;
+}
+
+.pore {
+  position: relative;
+}
+
+.poab {
+  position: absolute;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.flex-auto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col, .flex-col-auto {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-col-auto {
+  justify-content: center;
+  align-items: center;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.mx-auto {
+  margin-inline: auto;
+}
+
+.mt-auto {
+  margin-top: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  pointer-events: auto;
+  display: block;
+}
+
+.notvisibility {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan;
+  }
+  50% {
+    text-shadow: 0 0 30px white, 0 0 40px magenta, 0 0 60px cyan;
+  }
+  100% {
+    text-shadow: 0 0 20px white, 0 0 30px magenta, 0 0 40px cyan;
+  }
+}
+@keyframes growup {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes rotate-earth {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+:root {
+  --white: #fff;
+  --black: #000;
+  --width-button: 210px;
+  --width-select-mode-game: 230px;
+  --height-button: 70px;
+  --height-border-button: 50%;
+  --width-border-button: 50%;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.header-body,
+.tutorial-body {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-player, .choice-player, .select-mode, .mode-child {
+  position: absolute;
+  bottom: 5%;
+}
+
+.btn {
+  margin: 0 1.875rem;
+  padding: 0.625rem 1rem;
+  font-size: 1.375rem;
+  font-weight: bold;
+  min-width: var(--width-button);
+  height: var(--height-button);
+  color: var(--white);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  /* background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(135deg, magenta, cyan); */
+  animation: growup 2s infinite;
+}
+
+.select-mode-game {
+  min-width: var(--width-select-mode-game);
+}
+
+.btn-tutorial {
+  margin: 0 1.25rem;
+  padding: 0.625rem;
+  min-width: 2.75rem;
+  height: 5.375rem;
+}
+.btn-tutorial svg {
+  fill: transparent;
+}
+
+.back {
+  font-size: 2.5rem;
+}
+
+.btn-back {
+  z-index: 2;
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-next {
+  margin-left: auto;
+}
+
+.btn-start-game {
+  position: absolute;
+  bottom: 10%;
+}
+
+.btn-play::before, .btn-start-game::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--width-border-button);
+  height: var(--height-border-button);
+  border-top: 0.125rem solid var(--white);
+  border-left: 0.125rem solid var(--white);
+}
+.btn-play::after, .btn-start-game::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: var(--width-border-button);
+  height: var(--height-border-button);
+  border-bottom: 0.125rem solid var(--white);
+  border-right: 0.125rem solid var(--white);
+}
+
+.earth {
+  width: 62.5rem;
+  height: 62.5rem;
+  background-image: url(/demo/src/assets/imgs/earth.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  bottom: -130%;
+  animation: rotate-earth 32s infinite linear;
+}
+
+.icon-12 {
+  font-size: 0.75rem;
+  height: 0.75rem;
+}
+
+.icon-14 {
+  font-size: 0.875rem;
+  height: 0.875rem;
+}
+
+.icon-16 {
+  font-size: 1rem;
+  height: 1rem;
+}
+
+.icon-20 {
+  font-size: 1.25rem;
+  height: 1.25rem;
+}
+
+.icon-24 {
+  font-size: 1.5rem;
+  height: 1.5rem;
+}
+
+.icon-48 {
+  font-size: 3rem;
+  height: 3rem;
+}
+
+.on, .off {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 36px;
+  height: 36px;
+  color: var(--white);
+  border: none;
+  background-color: transparent;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.header {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-image: url(/demo/src/assets/imgs/header.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.header-body {
+  width: 37.5rem;
+}
+
+.tutorial {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url(/demo/src/assets/imgs/header.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.tutorial-body {
+  width: 100%;
+}
+.tutorial-show {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+}
+.tutorial-list {
+  color: #fff;
+  line-height: 1.86;
+  font-size: 1.5rem;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.tutorial__item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.625rem 1.25rem;
+  margin: 0.625rem 0;
+  border-radius: 0.625rem;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s linear;
+}
+
+.tutorial-list li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-list li::before {
+  content: "★";
+  color: #FFD700;
+  margin-right: 0.625rem;
+}
+
+/* ========= GameCanvas ========== */
+#gameCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.game-over-container, .pause-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background: radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%); */
+  color: white;
+  animation: fadeIn 2s;
+  background-size: cover;
+}
+
+.game-over-title, .pause-title {
+  font-size: 4rem;
+  text-shadow: 0 0 1.25rem white, 0 0 1.875rem magenta, 0 0 2.5rem cyan;
+  margin-bottom: 1.25rem;
+  animation: pulse 2s infinite;
+}
+
+.button-container {
+  background-color: transparent;
+  outline: none;
+  border: none;
+}
+
+.restart-btn, .continue-btn {
+  padding: 0.9375rem 1.875rem;
+  font-size: 1.25rem;
+  background: linear-gradient(45deg, #ff6ec4, #7873f5);
+  border: none;
+  border-radius: 0.625rem;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s, background 0.5s;
+  margin: 0.625rem; /* Thêm khoảng cách giữa các nút */
+}
+
+.restart-btn:hover {
+  transform: scale(1.1);
+  background: linear-gradient(45deg, #6ee2ff, #6454f0);
+}
+
+.score-text, .resume-text {
+  color: #FFD700; /* Màu vàng sáng */
+  font-size: 1.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.play-again-text {
+  color: #ff6666; /* Màu đỏ nhạt */
+  font-size: 1.875rem;
+  margin-bottom: 1.25rem;
+}
+
+#handCanvas {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+
+#video {
+  z-index: 0;
+}
+
+/* CSS cho cảnh báo tên lửa */
+.missile-warning {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  padding: 0.625rem 1.25rem;
+  background-color: red;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border-radius: 0.3125rem;
+  animation: fadeInOut 2s;
+}
+
+/*# sourceMappingURL=index.css.map */

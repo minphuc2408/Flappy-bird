@@ -1,0 +1,58 @@
+@use "../util/functions" as *;
+
+.tutorial {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: url(/demo/src/assets/imgs/header.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    &-body{
+        width: 100%;
+    }
+    &-show {
+        position: absolute;
+        display: flex;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+    }
+    &-list {
+        color: #fff;
+        line-height: 1.86;
+        font-size: rem(24);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+
+
+.tutorial__item {
+    background: rgba(255, 255, 255, 0.1); 
+    padding: rem(10) rem(20);
+    margin: rem(10) 0; 
+    border-radius: rem(10); 
+    width: 80%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s linear;
+}
+
+.tutorial-list li:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-list li::before {
+    content: '★'; 
+    color: #FFD700; 
+    margin-right: rem(10); 
+}

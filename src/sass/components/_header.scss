@@ -1,0 +1,15 @@
+@use "../util/functions" as f;
+@use "../global/decoration" as *;
+
+.header {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-image: url(/demo/src/assets/imgs/header.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    &-body {
+        width: f.rem(600);
+    }
+}
