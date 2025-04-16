@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 *, *::after, *::before {
   box-sizing: inherit;
   margin: 0;
@@ -42,7 +42,7 @@ a {
 }
 
 :root {
-  --font-ubuntu: "Poppins", san-serif;
+  --font-ubuntu: "Ubuntu", sans-serif;
 }
 
 :root {
@@ -332,7 +332,7 @@ h1, .tutorial__heading {
 .earth {
   width: 62.5rem;
   height: 62.5rem;
-  background-image: url(/demo/src/assets/imgs/earth.png);
+  background-image: url(../assets/imgs/earth.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -390,7 +390,7 @@ h1, .tutorial__heading {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url(/demo/src/assets/imgs/header.png);
+  background-image: url(../assets/imgs/header.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -403,7 +403,7 @@ h1, .tutorial__heading {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: url(/demo/src/assets/imgs/header.png);
+  background: url(../assets/imgs/header.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -584,5 +584,11 @@ h1, .tutorial__heading {
     width: 50%;
     height: 50%;
 }
+
+.disabled-button {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 
 /*# sourceMappingURL=index.css.map */

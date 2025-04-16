@@ -40,6 +40,12 @@ class Game {
         this.isGameStarted = false;
         this.isGameOver = false;
         this.pause = false;
+        //Tutorial mode
+        this.isTutorialMode = true;
+        this.tutorialDuration = 30; // 30 seconds tutorial
+        this.isCountingDown = false;
+        this.countdownTime = 3; // 3, 2, 1 countdown
+        this.tutorialScore = 0; // Track score during tutorial
         //Sound
         this.flapSound = document.getElementById("flap");
         this.playerDieSound = document.getElementById("player-die");
@@ -118,7 +124,7 @@ class Game {
         // Time 
         gameCtx.save();
         gameCtx.fillStyle = "#fff";
-        gameCtx.font = "20px Ubuntu";
+        gameCtx.font = "20px Ubuntu, sans-serif";
         gameCtx.fillText(`Time: `+ gameTime.toFixed(2) + "s", gameCanvas.width - 140, 30);
         gameCtx.restore();
     }
@@ -137,12 +143,67 @@ class Game {
                 this.pause = true;
             }
         }
+        
+        // Handle tutorial mode
+        if (this.isTutorialMode) {
+            // Store tutorial score separately
+            this.tutorialScore = this.scoreOverall;
+            
+            // Start countdown at 27 seconds instead of waiting for full tutorial duration
+            if (gameTime >= 27 && !this.isCountingDown) {
+                this.isCountingDown = true;
+                this.countdownTime = 3;
+                // Play sound to alert player about countdown
+                this.playSound(this.startGameSound);
+            }
+            
+            // Handle countdown with precise timing
+            if (this.isCountingDown) {
+                // Calculate time since countdown started
+                const countdownElapsed = gameTime - 27;
+                
+                // Update countdown number based on elapsed time
+                // This ensures each number shows for exactly 1 second
+                this.countdownTime = 3 - Math.floor(countdownElapsed);
+                
+                // End of countdown
+                if (this.countdownTime <= 0) {
+                    // Add a short delay before ending tutorial mode
+                    if (countdownElapsed >= 3.5) {
+                        this.isTutorialMode = false;
+                        this.isCountingDown = false;
+                        // Reset score accumulated during tutorial
+                        this.scoreOverall = 0;
+                        
+                        // Reset player health to default values
+                        this.playerInGame.forEach(player => {
+                            player.currentHealth = player.maxHealth;
+                            player.displayHealth = player.maxHealth;
+                            if (player.currentMana !== undefined) {
+                                player.currentMana = player.maxMana;
+                                player.displayMana = player.maxMana;
+                            }
+                        });
+                        
+                        // Play sound to signal real game start
+                        this.playSound(this.startGameSound);
+                    }
+                }
+            }
+        }
+        
         //Player
         this.playerInGame.forEach(player => {
             player.update(deltaTime);
         });
 
-        this.playerInGame = this.playerInGame.filter(player => player.isAlive);
+        this.playerInGame = this.playerInGame.filter(player => {
+            // In tutorial mode, keep players alive regardless of conditions
+            if (this.isTutorialMode) {
+                return true;
+            }
+            return player.isAlive;
+        });
 
         if(this.playerInGame.length === 0) {
             this.isGameOver = true;
@@ -186,6 +247,12 @@ class Game {
         this.loadImage = false;
         this.frames = 0;
         this.fps = 0;
+        
+        // Reset tutorial mode properties
+        this.isTutorialMode = true;
+        this.isCountingDown = false;
+        this.countdownTime = 3;
+        this.tutorialScore = 0;
     }
 }
 

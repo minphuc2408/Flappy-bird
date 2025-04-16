@@ -407,7 +407,7 @@ class ObstacleHandler {
 
         setTimeout(() => {
             document.body.removeChild(warningElement);
-        }, 2000);
+        }, 1500);
     }
 }
 
@@ -416,8 +416,8 @@ class ObstacleNumberAndAlphabet extends ObstacleHandler {
         super(game, gameCtx); 
         this.width = 120;
         this.height = 120;
-        this.obstacleWidth = 76;
-        this.obstacleHeight = 76;
+        this.obstacleWidth = 86;
+        this.obstacleHeight = 86;
 
         this.wrongSound = document.getElementById("wrong");  
         this.correctSound = document.getElementById("correct");  
@@ -726,7 +726,7 @@ class BOSS extends Enemy {
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
         this.gameCtx.translate(gameCanvas.width, 0); 
         this.gameCtx.scale(-1, 1);
-        this.gameCtx.font = "12px Ubuntu";
+        this.gameCtx.font = "12px Ubuntu, sans-serif";
         this.gameCtx.fillStyle = "#fff";
         this.gameCtx.fillText(`${Math.max(this.displayHealth, 0)} / ${this.maxHealth}`, gameCanvas.width - 130, healthY + 14);
         this.gameCtx.restore();

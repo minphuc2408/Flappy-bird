@@ -40,7 +40,9 @@ class Player {
         this.y += this.v * deltaTime;
         this.score = this.game.scoreOverall;
         this.smoke.updateSmokeParticles(deltaTime);
-        if (this.currentHealth <= 0) {
+        
+        // Check if player should be immortal during tutorial mode
+        if (!this.game.isTutorialMode && this.currentHealth <= 0) {
             this.isFalling = true;
         }
 
@@ -62,9 +64,14 @@ class Player {
             this.v = 0;
         }
 
-        if (this.y - this.height >= gameCanvas.height) {
+        // Only check for player death if not in tutorial mode
+        if (this.y - this.height >= gameCanvas.height && !this.game.isTutorialMode) {
             this.game.playSound(this.game.playerDieSound);
             this.isAlive = false;
+        } else if (this.y - this.height >= gameCanvas.height && this.game.isTutorialMode) {
+            // In tutorial mode, bounce the player back into the game area if they fall off
+            this.y = gameCanvas.height - this.height;
+            this.v = this.l; // Apply upward velocity (flap)
         }
 
         if(!this.isAlive) {
@@ -105,7 +112,7 @@ class Player {
         this.gameCtx.fillRect(healthX, healthY, 200, 20);
         this.gameCtx.fillStyle = "rgba(255, 36, 33, 1)";
         this.gameCtx.fillRect(healthX, healthY, Math.max((this.displayHealth / this.maxHealth) * 200, 0), 20);
-        this.gameCtx.font = "12px Ubuntu"; 
+        this.gameCtx.font = "12px Ubuntu, sans-serif"; 
         this.gameCtx.fillStyle = "#fff"; 
         this.gameCtx.fillText(`${this.displayHealth} / ${this.maxHealth}`, healthX + 105, healthY + 14);
         this.gameCtx.strokeStyle = "#333"; 
@@ -117,7 +124,7 @@ class Player {
     drawScore(scoreX, scoreY) {
         this.gameCtx.save();
         this.gameCtx.fillStyle = "#fff";
-        this.gameCtx.font = "20px Ubuntu";
+        this.gameCtx.font = "20px Ubuntu, sans-serif";
         this.gameCtx.fillText("Score: " + this.score, scoreX, scoreY);
         this.gameCtx.restore();
     }

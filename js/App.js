@@ -1,5 +1,6 @@
 import { GameHard ,GameMedium, GameEasy, GameChild, Game, GameChildEasy } from './Game.js';
 import Navigation from './Navigation.js';
+import Render from './Render.js';
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -20,6 +21,14 @@ window.addEventListener('load', function () {
     const clickSound = document.getElementById("click");
     const on = document.querySelector(".on");
     const off = document.querySelector(".off");
+    const openSound = document.querySelector(".btn-start-game");
+
+
+    openSound.addEventListener('click', () => {
+        soundApp.play();
+        soundApp.currentTime = 0;
+    });
+
 
     function playSound(sound) {
         sound.currentTime = 0;
@@ -37,6 +46,8 @@ window.addEventListener('load', function () {
 
     const levelGame = [new GameChild(), new GameEasy(), new GameMedium(), new GameHard()];
     let game = new Game();
+    // Create a renderer instance for displaying the tutorial countdown
+    let renderer = new Render(game, gameCtx, gameCanvas);
     
     // Initialize SPA navigation
     const navigation = new Navigation();
@@ -80,12 +91,7 @@ window.addEventListener('load', function () {
             switch (index + 1) {
                 case 1: 
                     game = levelGame[0]; // Game Child
-                    break;
-                case 2:
-                    // Medium difficulty
-                    break;
-                case 3:
-                    // Hard difficulty
+                    renderer = new Render(game, gameCtx, gameCanvas); // Pass context and canvas
                     break;
             }
         });
@@ -94,6 +100,7 @@ window.addEventListener('load', function () {
     choiceLevel.forEach((level, index) => {
         level.addEventListener('click', () => {
             game = levelGame[index + 1];
+            renderer = new Render(game, gameCtx, gameCanvas); // Pass context and canvas
         });
     });
 
@@ -103,6 +110,8 @@ window.addEventListener('load', function () {
         game.udpatePlayerHandgestrue();
         game.reset();
         game.handgesture.start();
+        // Create new renderer with updated game
+        renderer = new Render(game, gameCtx, gameCanvas);
     });
 
     // Handle player selection after keyboard selection
@@ -111,6 +120,8 @@ window.addEventListener('load', function () {
             soundApp.pause();
             game.updatePlayers(index + 1);
             game.reset();
+            // Create new renderer with updated game
+            renderer = new Render(game, gameCtx, gameCanvas);
         });
     });
 
@@ -176,7 +187,8 @@ window.addEventListener('load', function () {
     function animate(timeStamp) {  
         const deltaTime = (timeStamp - lastTime) / 1000;    
         lastTime = timeStamp;
-        game.render(deltaTime);
+        // Use renderer.render instead of game.render to show countdown
+        renderer.render(deltaTime);
         requestAnimationFrame(animate);
     }
     animate(0);

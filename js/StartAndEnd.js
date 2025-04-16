@@ -14,10 +14,14 @@ export function gameScreen(game, gameCtx, gameCanvas, hand) {
     function drawStartScreen() {
         gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
         gameCtx.drawImage(game.spaceBackground, 0, 0, gameCanvas.width, gameCanvas.height);
-        gameCtx.fillStyle = 'white';
-        gameCtx.font = '30px Ubuntu';
+        gameCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        gameCtx.font = 'bold 34px Ubuntu';
         gameCtx.textAlign = 'center';
         gameCtx.fillText('Press Enter to start', gameCanvas.width / 2, gameCanvas.height / 2);
+        
+        // Add tutorial mode information
+        gameCtx.font = 'bold 32px Ubuntu';
+        gameCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     }
 
     function drawGameOverScreen() {
